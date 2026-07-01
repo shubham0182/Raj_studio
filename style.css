@@ -311,15 +311,11 @@ header.scrolled {
     }
 }
 
-.hero-content h1 {
-    font-size: clamp(1.8rem, 4.5vw, 3.2rem);
-    font-weight: 800;
-    line-height: 1.25;
-    margin-bottom: 1.25rem;
-    background: linear-gradient(135deg, var(--white) 0%, var(--gold) 50%, var(--light-blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.hero-subtitle {
+    font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+    color: var(--gold);
+    margin-bottom: 1rem;
+    font-weight: 600;
 }
 
 .hero-content p {
@@ -336,7 +332,7 @@ header.scrolled {
 }
 
 .hero-content h1 {
-    font-size: clamp(2rem, 5vw, 4rem);
+    font-size: clamp(2.5rem, 6vw, 5rem);
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 1.5rem;
@@ -344,6 +340,29 @@ header.scrolled {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    animation: typing 2.5s steps(20) forwards 0.8s, blinkCursor 0.8s step-end 3;
+    border-right: 3px solid var(--gold);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-content h1 i {
+    color: var(--gold);
+    -webkit-text-fill-color: var(--gold);
+    margin: 0 0.3rem;
+}
+
+@keyframes typing {
+    to { width: 100%; }
+}
+
+@keyframes blinkCursor {
+    0%, 100% { border-color: var(--gold); }
+    50% { border-color: transparent; }
 }
 
 .hero-content p {
@@ -568,9 +587,9 @@ section {
 }
 
 .product-image i {
-    font-size: 3.5rem;
+    font-size: 5rem;
     color: var(--gold);
-    opacity: 0.8;
+    opacity: 0.9;
     transition: var(--transition-smooth);
 }
 
@@ -1633,7 +1652,7 @@ footer {
     }
     
     .product-image i {
-        font-size: 2.5rem;
+        font-size: 3.5rem;
     }
     
     .product-info {
@@ -1884,7 +1903,7 @@ footer {
     }
     
     .product-image i {
-        font-size: 2rem;
+        font-size: 3rem;
     }
     
     .product-info {

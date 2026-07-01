@@ -641,6 +641,10 @@
                 '<div class="form-group">' +
                     '<input type="tel" id="checkoutPhone" placeholder="Phone Number" value="' + escapeHtml(customerData.phone || '') + '" style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
                 '</div>' +
+                '<div class="form-group">' +
+                    '<label style="display:block;color:var(--text-muted);font-size:0.8rem;margin-bottom:0.4rem;">Upload Image for Customization (optional)</label>' +
+                    '<input type="file" id="checkoutImage" accept="image/*" style="width:100%;padding:0.6rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text-muted);font-size:0.8rem;outline:none;cursor:pointer;">' +
+                '</div>' +
                 '<button onclick="app.submitOrder()" class="btn-primary" style="width:100%;justify-content:center;">Place Order</button>' +
             '</div>';
 
@@ -666,6 +670,7 @@
         var name = document.getElementById('checkoutName').value.trim();
         var email = document.getElementById('checkoutEmail').value.trim();
         var phone = document.getElementById('checkoutPhone').value.trim();
+        var imageFile = document.getElementById('checkoutImage').files[0];
 
         if (!name || !email) {
             showToast('Please fill in your name and email!', true);
@@ -688,19 +693,19 @@
         });
         var total = cart.reduce(function(sum, item) { return sum + (item.price * item.quantity); }, 0);
 
-        // Always save to localStorage FIRST as reliable backup
-        var orderRecord = { name: name, email: email, phone: phone, items: items, total: total, date: new Date().toLocaleString() };
+        function processOrder(imageData) {
+        var hasImage = imageData && imageData.length > 100;
+        var orderRecord = { name: name, email: email, phone: phone, items: items, total: total, date: new Date().toLocaleString(), image: imageData || '' };
         try {
             var existing = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
             existing.unshift(orderRecord);
             localStorage.setItem('rajStudio_orders', JSON.stringify(existing));
         } catch (e) {}
 
-        // Then try API
         fetch(API_BASE + '/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name, email: email, phone: phone, items: items, total: total })
+            body: JSON.stringify({ name: name, email: email, phone: phone, items: items, total: total, image: imageData || '' })
         }).then(function(r) {
             if (!r.ok) throw new Error('Server error');
             return r.json();
@@ -708,26 +713,74 @@
             cart.forEach(function(item) {
                 saveToGoogleSheet({
                     timestamp: new Date().toISOString(),
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    product: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: item.price * item.quantity,
-                    action: 'Ordered'
+                    name: name, email: email, phone: phone,
+                    product: item.name, price: item.price, quantity: item.quantity,
+                    total: item.price * item.quantity, action: 'Ordered'
                 });
             });
         }).catch(function(e) {
             console.warn('Order API save failed, using localStorage:', e);
         });
 
-        cart = [];
-        saveCart();
-        updateCartUI();
-        closeCart();
-        closeCheckoutModal();
-        showToast('Order placed successfully! We will contact you at ' + email + '.');
+        var finishOrder = function(imgObj) {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var padding = 30, maxW = 420, y = 50;
+        canvas.width = maxW + padding * 2;
+        canvas.height = 420 + items.length * 28 + (imgObj ? 60 : 0);
+        ctx.fillStyle = '#0f1e3a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#f5c542'; ctx.lineWidth = 2; ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+        ctx.fillStyle = '#f5c542'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center';
+        ctx.fillText('RAJ STUDIO GIFT', canvas.width / 2, y); y += 22;
+        ctx.font = '14px Arial'; ctx.fillStyle = '#aaa'; ctx.fillText('Pilvai', canvas.width / 2, y); y += 30;
+        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvas.width - padding, y); ctx.stroke(); y += 20;
+        ctx.fillStyle = '#fff'; ctx.font = '14px Arial'; ctx.textAlign = 'left';
+        ctx.fillText('Customer: ' + name, padding, y); y += 22;
+        ctx.fillText('Email: ' + email, padding, y); y += 22;
+        ctx.fillText('Phone: ' + (phone || '-'), padding, y); y += 22;
+        ctx.fillText('Date: ' + new Date().toLocaleString(), padding, y); y += 30;
+        if (imgObj) {
+            var ix = canvas.width - padding - 80, iy = y - 28;
+            ctx.drawImage(imgObj, ix, iy, 80, 80);
+            ctx.strokeStyle = '#f5c542'; ctx.lineWidth = 1.5; ctx.strokeRect(ix, iy, 80, 80);
+            ctx.fillStyle = '#aaa'; ctx.font = '10px Arial'; ctx.textAlign = 'center';
+            ctx.fillText('Uploaded Image', ix + 40, iy + 95); ctx.textAlign = 'left';
+            y += 55;
+        }
+        ctx.lineWidth = 2; ctx.strokeStyle = '#f5c542'; ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvas.width - padding, y); ctx.stroke(); y += 22;
+        ctx.fillStyle = '#f5c542'; ctx.font = 'bold 14px Arial'; ctx.fillText('Items:', padding, y); y += 24;
+        ctx.fillStyle = '#fff'; ctx.font = '13px Arial';
+        items.forEach(function(item) { ctx.fillText(item.name + ' x' + item.quantity + '  @ Rs.' + item.price.toFixed(2) + '  = Rs.' + (item.price * item.quantity).toFixed(2), padding, y); y += 22; });
+        y += 6;
+        ctx.strokeStyle = '#f5c542'; ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvas.width - padding, y); ctx.stroke(); y += 22;
+        ctx.fillStyle = '#f5c542'; ctx.font = 'bold 16px Arial'; ctx.fillText('TOTAL: Rs.' + total.toFixed(2), padding, y); y += 34;
+        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvas.width - padding, y); ctx.stroke(); y += 24;
+        ctx.fillStyle = '#f5c542'; ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center'; ctx.fillText('Take it from Raj Studio, Pilvai', canvas.width / 2, y); y += 22;
+        ctx.fillStyle = '#aaa'; ctx.font = '12px Arial'; ctx.fillText('Thank you for your order!', canvas.width / 2, y);
+        var link = document.createElement('a');
+        link.download = 'RajStudio_Bill_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        cart = []; saveCart(); updateCartUI(); closeCart(); closeCheckoutModal();
+        showToast('Order placed successfully! Bill downloaded. Take it from Raj Studio, Pilvai.');
+        };
+
+        if (hasImage) {
+            var loadImg = new Image();
+            loadImg.onload = function() { finishOrder(loadImg); };
+            loadImg.src = imageData;
+        } else {
+            finishOrder(null);
+        }
+        }
+
+        if (imageFile) {
+            var reader = new FileReader();
+            reader.onload = function(e) { processOrder(e.target.result); };
+            reader.readAsDataURL(imageFile);
+        } else {
+            processOrder('');
+        }
     }
 
     // ============================================
