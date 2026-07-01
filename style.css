@@ -221,6 +221,54 @@ header.scrolled {
     box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
 }
 
+/* Floating Cart Button (Top Right) */
+.floating-cart-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    z-index: 1001;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #e6a800);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(245, 197, 66, 0.4);
+    transition: var(--transition-smooth);
+    color: var(--navy-dark);
+    font-size: 1.2rem;
+}
+
+.floating-cart-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(245, 197, 66, 0.6);
+}
+
+.floating-cart-btn:active {
+    transform: scale(0.95);
+}
+
+.floating-cart-badge {
+    top: -4px;
+    right: -4px;
+    background: #ff4444;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.5);
+}
+
+@media (min-width: 769px) {
+    .floating-cart-btn {
+        top: 1.2rem;
+        right: 2rem;
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+}
+
 .bottom-nav-item .cart-count-badge {
     top: 2px;
     right: 50%;

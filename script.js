@@ -541,15 +541,15 @@
 
         // Update cart count badges
         cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-        var desktopBadge = document.getElementById('cartCountDesktop');
         var mobileBadge = document.getElementById('cartCountMobile');
-        if (desktopBadge) {
-            desktopBadge.textContent = cartCount;
-            desktopBadge.style.display = cartCount > 0 ? 'flex' : 'none';
-        }
+        var floatBadge = document.getElementById('cartCountFloat');
         if (mobileBadge) {
             mobileBadge.textContent = cartCount;
             mobileBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+        }
+        if (floatBadge) {
+            floatBadge.textContent = cartCount;
+            floatBadge.style.display = cartCount > 0 ? 'flex' : 'none';
         }
 
         if (cart.length === 0) {

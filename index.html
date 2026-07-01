@@ -141,16 +141,18 @@
                 <li><a href="#products" class="nav-link">Products</a></li>
                 <li><a href="#customize" class="nav-link">Customize</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li><a href="#" class="nav-link cart-link-desktop" onclick="event.preventDefault(); app.toggleCart();" title="Cart">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count-badge" id="cartCountDesktop">0</span>
-                </a></li>
             </ul>
             <div class="hamburger">
                 <i class="fas fa-bars"></i>
             </div>
         </nav>
     </header>
+
+    <!-- Floating Cart Button (Top Right) -->
+    <button class="floating-cart-btn" id="floatingCartBtn" onclick="event.stopPropagation(); app.toggleCart();" title="Cart">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count-badge floating-cart-badge" id="cartCountFloat">0</span>
+    </button>
 
     <!-- Page: Home -->
     <div class="page active" id="page-home">
