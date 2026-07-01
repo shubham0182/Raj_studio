@@ -261,11 +261,8 @@
                 <h2>Our Gallery</h2>
                 <p>Browse through our collection of customized gifts</p>
             </div>
-            <div class="gallery-grid" id="galleryGrid">
-                <div class="gallery-item">
-                    <img src="shubh.jpeg" alt="Gallery Image">
-                </div>
-            </div>
+            <div class="gallery-grid" id="galleryGrid"></div>
+            <div id="galleryLoading" style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div>
         </section>
     </div>
 
@@ -347,6 +344,7 @@
                         <button class="admin-tab" data-tab="products" onclick="switchAdminTab('products')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Products</button>
                         <button class="admin-tab" data-tab="categories" onclick="switchAdminTab('categories')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Categories</button>
                         <button class="admin-tab" data-tab="orders" onclick="switchAdminTab('orders')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Orders</button>
+                        <button class="admin-tab" data-tab="gallery" onclick="switchAdminTab('gallery')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Gallery</button>
                     </div>
                     <button onclick="adminLogout()" class="btn-outline" style="font-size: 0.8rem;">Logout</button>
                 </div>
@@ -400,6 +398,20 @@
                 <!-- Tab: Orders -->
                 <div id="adminTab-orders" class="admin-tab-content" style="display: none;">
                     <div id="adminOrders" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+                </div>
+                <!-- Tab: Gallery -->
+                <div id="adminTab-gallery" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Gallery Image</h3>
+                        <label style="display:flex; align-items:center; gap:10px; width:100%; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                            <i class="fas fa-upload"></i>
+                            <span id="adminGalleryLabel">Choose image to upload</span>
+                            <input type="file" id="adminGalleryInput" accept="image/*" style="display:none;" onchange="previewAdminGalleryImage(this)">
+                        </label>
+                        <div id="adminGalleryPreview" style="display:none; margin-top:10px; width:100px; height:100px; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);"><img src="" style="width:100%;height:100%;object-fit:cover;"></div>
+                        <button onclick="adminUploadGallery()" class="btn-primary" style="margin-top:0.75rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Upload</button>
+                    </div>
+                    <div id="adminGalleryList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;"></div>
                 </div>
                 <!-- Tab: Categories -->
                 <div id="adminTab-categories" class="admin-tab-content" style="display: none;">
@@ -692,6 +704,77 @@
         }
         }
 
+        function previewAdminGalleryImage(input) {
+            var label = document.getElementById('adminGalleryLabel');
+            var preview = document.getElementById('adminGalleryPreview');
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.style.display = 'block';
+                    preview.querySelector('img').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function adminUploadGallery() {
+            var input = document.getElementById('adminGalleryInput');
+            if (!input.files || !input.files[0]) { alert('Please select an image'); return; }
+            var caption = prompt('Caption (optional):') || '';
+            var fd = new FormData();
+            fd.append('image', input.files[0]);
+            fetch(API_BASE + '/api/upload', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: fd
+            }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(function(resp) {
+                return fetch(API_BASE + '/api/gallery', {
+                    method: 'POST',
+                    headers: Object.assign({'Content-Type': 'application/json'}, getAuthHeaders()),
+                    body: JSON.stringify({ image: resp.url, caption: caption })
+                });
+            }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(function() {
+                document.getElementById('adminGalleryInput').value = '';
+                document.getElementById('adminGalleryLabel').textContent = 'Choose image to upload';
+                document.getElementById('adminGalleryPreview').style.display = 'none';
+                renderAdminGallery();
+            }).catch(function(e) { alert('Upload failed: ' + (e.message || 'Unknown error')); });
+        }
+
+        function renderAdminGallery() {
+            var container = document.getElementById('adminGalleryList');
+            if (!_adminToken) { container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Login required</p></div>'; return; }
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Loading...</p></div>';
+            fetch(API_BASE + '/api/gallery', { headers: getAuthHeaders() })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function(images) {
+                    if (!images.length) {
+                        container.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><i class="fas fa-images" style="font-size:2.5rem;margin-bottom:1rem;opacity:0.5;"></i><p>No gallery images yet</p></div>';
+                        return;
+                    }
+                    container.innerHTML = images.map(function(img) {
+                        return '<div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);aspect-ratio:1;background:rgba(255,255,255,0.03);">' +
+                            '<img src="' + img.image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + escapeHtml(img.caption || 'Gallery image') + '">' +
+                            (img.caption ? '<div style="position:absolute;bottom:0;left:0;right:0;padding:0.4rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:var(--white);font-size:0.7rem;text-align:center;">' + escapeHtml(img.caption) + '</div>' : '') +
+                            '<button onclick="adminDeleteGallery(\'' + img._id + '\')" style="position:absolute;top:6px;right:6px;background:rgba(255,0,0,0.7);border:none;border-radius:50%;width:28px;height:28px;color:white;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;" onmouseover="this.style.opacity=1" onmouseleave="this.style.opacity=0"><i class="fas fa-trash"></i></button>' +
+                            '</div>';
+                    }).join('');
+                }).catch(function() {
+                    container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Failed to load gallery</p></div>';
+                });
+        }
+
+        function adminDeleteGallery(id) {
+            if (!confirm('Delete this image?')) return;
+            fetch(API_BASE + '/api/gallery/' + id, { method: 'DELETE', headers: getAuthHeaders() })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function() { renderAdminGallery(); })
+                .catch(function(e) { alert('Error: ' + e.message); });
+        }
+
         function escapeHtml(text) {
             var d = document.createElement('div');
             d.textContent = text;
@@ -708,6 +791,7 @@
             if (tab === 'products') { populateCategorySelect(); renderAdminProducts(); }
             if (tab === 'categories') renderAdminCategories();
             if (tab === 'orders') renderAdminOrders();
+            if (tab === 'gallery') renderAdminGallery();
         }
 
         function populateCategorySelect() {
@@ -954,6 +1038,7 @@
                     target.scrollTop = 0;
                     setTimeout(function() { initPageScrollReveal(target); }, 50);
                 }
+                if (page === 'gallery') loadGallery();
                 window.scrollTo({ top: 0, behavior: 'instant' });
                 document.querySelectorAll('.bottom-nav-item, .nav-link').forEach(function(link) {
                     var href = link.getAttribute('href');
@@ -973,6 +1058,28 @@
                         if (err) err.style.display = 'none';
                     }
                 }
+            }
+
+            function loadGallery() {
+                var grid = document.getElementById('galleryGrid');
+                var loading = document.getElementById('galleryLoading');
+                if (!grid) return;
+                if (loading) loading.style.display = 'block';
+                fetch(API_BASE + '/api/gallery')
+                    .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                    .then(function(images) {
+                        if (loading) loading.style.display = 'none';
+                        if (!images.length) {
+                            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);"><i class="fas fa-images" style="font-size:3rem;margin-bottom:1rem;opacity:0.5;display:block;"></i>No images yet</div>';
+                            return;
+                        }
+                        grid.innerHTML = images.map(function(img) {
+                            return '<div class="gallery-item"><img src="' + img.image + '" alt="' + (img.caption ? img.caption.replace(/"/g,'&quot;') : 'Gallery image') + '"></div>';
+                        }).join('');
+                    }).catch(function() {
+                        if (loading) loading.style.display = 'none';
+                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">Failed to load gallery</div>';
+                    });
             }
 
             function getPageFromHash() {

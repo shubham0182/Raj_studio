@@ -16,6 +16,7 @@ const Category = require('./models/Category');
 const Product = require('./models/Product');
 const Submission = require('./models/Submission');
 const Order = require('./models/Order');
+const Gallery = require('./models/Gallery');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -295,6 +296,31 @@ app.post('/api/orders', async (req, res) => {
 app.delete('/api/orders/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     await Order.findByIdAndDelete(id);
+    res.json({ success: true });
+});
+
+app.get('/api/gallery', async (req, res) => {
+    const images = await Gallery.find().sort({ _id: -1 });
+    res.json(images);
+});
+
+app.post('/api/gallery', authenticateToken, async (req, res) => {
+    const { image, caption } = req.body;
+    if (!image) return res.status(400).json({ error: 'Image is required' });
+    const date = new Date().toLocaleString();
+    const result = await Gallery.create({ image, caption: caption || '', date });
+    res.json({ success: true, id: result._id });
+});
+
+app.delete('/api/gallery/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const item = await Gallery.findById(id);
+    if (!item) return res.status(404).json({ error: 'Not found' });
+    if (item.image && item.image.startsWith('/uploads/')) {
+        const filePath = path.join(__dirname, item.image);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
+    await Gallery.findByIdAndDelete(id);
     res.json({ success: true });
 });
 
