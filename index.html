@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raj Studio Gift - Corporate & Customized Gift Solutions</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <style>
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 30, 58, 0.97);
+            backdrop-filter: blur(15px);
+            z-index: 999;
+            padding: 6px 0 env(safe-area-inset-bottom, 6px);
+            justify-content: space-around;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.6rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            border-radius: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav-item i {
+            font-size: 1.15rem;
+            transition: all 0.25s ease;
+        }
+        .bottom-nav-item span {
+            font-size: 0.6rem;
+            line-height: 1;
+        }
+        .bottom-nav-item:hover,
+        .bottom-nav-item.active {
+            color: var(--gold);
+        }
+        .bottom-nav-item.active i {
+            text-shadow: 0 0 12px rgba(245, 197, 66, 0.5);
+        }
+        .hamburger i { font-size: 1.4rem; color: var(--gold); }
+        @media (min-width: 769px) { .hamburger { display: none !important; } }
+        @media (max-width: 768px) {
+            .bottom-nav { display: flex; border: none !important; outline: none !important; box-shadow: none !important; }
+            body { padding-bottom: 58px; }
+            .nav-link::after { display: none !important; }
+            .nav-link.active::after { display: none !important; }
+            header, header.scrolled, .navbar { border: none !important; outline: none !important; box-shadow: none !important; }
+        }
+        .page {
+            display: none;
+            animation: pageFadeIn 0.4s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page.active .section-header {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .nav-link.active {
+            color: var(--gold) !important;
+        }
+        @media (min-width: 769px) {
+            .nav-link.active::after {
+                width: 100% !important;
+            }
+        }
+        #adminPanel .btn-outline {
+            border-color: rgba(255,255,255,0.2);
+            color: var(--text-muted);
+            padding: 0.5rem 1.2rem;
+        }
+        #adminPanel .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .admin-tab.active {
+            background: rgba(245, 197, 66, 0.15) !important;
+            color: var(--gold) !important;
+        }
+        .admin-tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        #adminPanel select option {
+            background: #1a2a4a;
+            color: var(--white);
+        }
+        @media (max-width: 768px) {
+            #adminSubmissions > div > div {
+                flex-direction: column;
+            }
+            .admin-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+            .admin-tabs button {
+                font-size: 0.75rem !important;
+                padding: 6px 10px !important;
+            }
+        }
+        @media (max-width: 480px) {
+            #adminTab-products > div:first-child > div {
+                grid-template-columns: 1fr !important;
+            }
+            #adminTab-categories > div:first-child > div {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="logo.svg" alt="Raj Studio Gift" class="logo-img">
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#customize" class="nav-link">Customize</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page: Home -->
+    <div class="page active" id="page-home">
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Corporate &amp; Customized Gift Solutions</h1>
+                <p>Premium quality gifts tailored for your corporate needs</p>
+                <div class="cta-buttons">
+                    <a href="#products" class="btn-primary">Shop Now</a>
+                    <a href="#customize" class="btn-secondary">Customize Gift</a>
+                </div>
+            </div>
+
+        </section>
+        <section id="features" class="features">
+            <div class="section-header">
+                <h2>Why Choose Us</h2>
+                <p>Experience the difference with our premium services</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Quality Printing</h3>
+                    <p>We use state-of-the-art printing technology for vibrant, long-lasting results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Creative Designs</h3>
+                    <p>Our expert designers create unique, eye-catching designs tailored to your brand.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Trusted Service</h3>
+                    <p>With years of experience, we deliver reliable service and on-time delivery.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Products -->
+    <div class="page" id="page-products">
+        <section id="products" class="products">
+            <div class="section-header">
+                <h2>Our Product Categories</h2>
+                <p>Explore our premium range of customizable gifts</p>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="tshirt">T-shirt Printing</button>
+                <button class="filter-btn" data-filter="mug">Mug Printing</button>
+                <button class="filter-btn" data-filter="frame">Photo Frames</button>
+                <button class="filter-btn" data-filter="pen">Pen Printing</button>
+            </div>
+            <div class="products-grid">
+                <!-- Product Cards will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Customize -->
+    <div class="page" id="page-customize">
+        <section id="customize" class="customize">
+            <div class="section-header">
+                <h2>Customize Your Gift</h2>
+                <p>Create personalized gifts that make a lasting impression</p>
+            </div>
+            <div class="customize-options">
+                <div class="option-card">
+                    <i class="fas fa-tshirt"></i>
+                    <h3>T-shirt Printing</h3>
+                    <p>Custom designs on premium quality t-shirts</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-mug-hot"></i>
+                    <h3>Mug Printing</h3>
+                    <p>Personalized mugs for everyday use</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-image"></i>
+                    <h3>Photo Frames</h3>
+                    <p>Elegant frames to showcase your memories</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-pen"></i>
+                    <h3>Pen Printing</h3>
+                    <p>Professional pens with your logo or message</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Contact -->
+    <div class="page" id="page-contact">
+        <section id="contact" class="contact">
+            <div class="section-header">
+                <h2>Contact Us</h2>
+                <p>Get in touch with our team for inquiries and orders</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-user"></i>
+                        <span>Name: Rajendrasinh Vihol</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Phone: +91 98765 43210</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Address: 123 Corporate Park, Ahmedabad, Gujarat 380015</span>
+                    </div>
+                </div>
+                <div class="contact-map">
+                    <!-- Google Maps Embed (Optional) -->
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3600.1234567890123!2d72.5714!3d23.0225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e83f1a4f7b3f1%3A0x8a2d3a0b8c9d0e1f!2s123%20Corporate%20Park%2C%20Ahmedabad%2C%20Gujarat%20380015!5e0!3m2!1sen!2sin!4v1619744305862"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="#admin" class="btn-outline" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.5rem;"><i class="fas fa-lock"></i> Admin Panel</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Admin -->
+    <div class="page" id="page-admin">
+        <section class="contact" style="min-height: 100vh;">
+            <div class="section-header">
+                <h2>Admin Panel</h2>
+                <p>Manage contact submissions</p>
+            </div>
+            <div id="adminLogin" style="max-width: 360px; margin: 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px);">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-lock" style="font-size: 2rem; color: var(--gold);"></i>
+                    <h3 style="color: var(--white); margin-top: 0.5rem; font-size: 1.1rem;">Admin Login</h3>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="adminPass" placeholder="Enter admin password" style="width: 100%; padding: 0.75rem 0.9rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--white); font-size: 0.85rem; outline: none;">
+                </div>
+                <button onclick="adminLogin()" class="btn-primary" style="width: 100%; justify-content: center;">Login</button>
+                <p id="adminError" style="color: #ff6b6b; font-size: 0.8rem; text-align: center; margin-top: 0.75rem; display: none;">Incorrect password</p>
+            </div>
+            <div id="adminPanel" style="display: none; max-width: 960px; margin: 0 auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="admin-tabs" style="display: flex; gap: 4px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.08);">
+                        <button class="admin-tab active" data-tab="submissions" onclick="switchAdminTab('submissions')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Submissions</button>
+                        <button class="admin-tab" data-tab="products" onclick="switchAdminTab('products')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Products</button>
+                        <button class="admin-tab" data-tab="categories" onclick="switchAdminTab('categories')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Categories</button>
+                    </div>
+                    <button onclick="adminLogout()" class="btn-outline" style="font-size: 0.8rem;">Logout</button>
+                </div>
+                <!-- Tab: Submissions -->
+                <div id="adminTab-submissions" class="admin-tab-content" style="display: block;">
+                    <div id="adminSubmissions" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+                </div>
+                <!-- Tab: Products -->
+                <div id="adminTab-products" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Product</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminProdName" placeholder="Product name" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <select id="adminProdCategory" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;"></select>
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <input type="number" id="adminProdPrice" placeholder="Price" step="0.01" min="0" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label style="display:flex; align-items:center; gap:8px; width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                                    <i class="fas fa-upload"></i>
+                                    <span id="adminProdIconLabel">Upload product image</span>
+                                    <input type="file" id="adminProdIcon" accept="image/*" style="display:none;" onchange="previewAdminImage(this)">
+                                </label>
+                                <div id="adminProdIconPreview" style="display:none; margin-top:6px; width:60px; height:60px; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);"><img src="" style="width:100%;height:100%;object-fit:cover;"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin:0.75rem 0 0;">
+                            <textarea id="adminProdDesc" placeholder="Description" rows="2" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none; resize:vertical;"></textarea>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                        <button id="adminAddBtn" onclick="adminAddProduct()" class="btn-primary" style="font-size:0.85rem; padding:0.6rem 1.5rem;">Add Product</button>
+                        <button id="adminCancelBtn" onclick="adminCancelEdit()" class="btn-outline" style="font-size:0.85rem; padding:0.6rem 1.5rem; display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:var(--text-muted); border-radius:8px; cursor:pointer;">Cancel</button>
+                    </div>
+                    </div>
+                    <div id="adminProductList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                </div>
+                <!-- Tab: Categories -->
+                <div id="adminTab-categories" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Category</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminCatName" placeholder="Category name" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminCatIcon" placeholder="Icon class (e.g. fas fa-tag)" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                        </div>
+                        <button onclick="adminAddCategory()" class="btn-primary" style="margin-top:0.75rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Add Category</button>
+                    </div>
+                    <div id="adminCategoryList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="logo.svg" alt="Raj Studio Gift" class="footer-logo-img">
+            </div>
+            <p>Premium Corporate Gift Solutions</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Raj Studio Gift. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar (Hidden by default) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be populated by JavaScript -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₹0.00</span>
+            </div>
+            <button class="btn-primary" id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="#home" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#products" class="bottom-nav-item">
+            <i class="fas fa-box"></i>
+            <span>Products</span>
+        </a>
+        <a href="#customize" class="bottom-nav-item">
+            <i class="fas fa-paint-brush"></i>
+            <span>Customize</span>
+        </a>
+        <a href="#contact" class="bottom-nav-item">
+            <i class="fas fa-envelope"></i>
+            <span>Contact</span>
+        </a>
+    </nav>
+
+    <script>
+        var ADMIN_PASSWORD = 'raj123';
+
+        function adminLogin() {
+            var pass = document.getElementById('adminPass');
+            var err = document.getElementById('adminError');
+            if (pass.value === ADMIN_PASSWORD) {
+                err.style.display = 'none';
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                switchAdminTab('submissions');
+                renderAdminSubmissions();
+                populateCategorySelect();
+                renderAdminProducts();
+                renderAdminCategories();
+            } else {
+                err.style.display = 'block';
+                pass.value = '';
+                pass.focus();
+            }
+        }
+
+        function adminLogout() {
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminError').style.display = 'none';
+        }
+
+        function deleteSubmission(index) {
+            var subs = JSON.parse(localStorage.getItem('rajStudio_contactSubmissions') || '[]');
+            subs.splice(index, 1);
+            localStorage.setItem('rajStudio_contactSubmissions', JSON.stringify(subs));
+            renderAdminSubmissions();
+        }
+
+        function renderAdminSubmissions() {
+            var container = document.getElementById('adminSubmissions');
+            var subs = JSON.parse(localStorage.getItem('rajStudio_contactSubmissions') || '[]');
+            if (!subs.length) {
+                container.innerHTML = '<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);"><i class="fas fa-inbox" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i><p>No submissions yet</p></div>';
+                return;
+            }
+            container.innerHTML = subs.map(function(s, i) {
+                return '<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; backdrop-filter: blur(10px);">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">' +
+                    '<div style="flex: 1;">' +
+                    '<div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">' +
+                    '<span style="color: var(--gold); font-weight: 600; font-size: 0.9rem;"><i class="fas fa-user"></i> ' + escapeHtml(s.name) + '</span>' +
+                    '<span style="color: var(--light-blue); font-size: 0.85rem;"><i class="fas fa-envelope"></i> ' + escapeHtml(s.email) + '</span>' +
+                    (s.phone ? '<span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fas fa-phone"></i> ' + escapeHtml(s.phone) + '</span>' : '') +
+                    '</div>' +
+                    '<p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">' + escapeHtml(s.message) + '</p>' +
+                    '<div style="color: var(--text-muted); font-size: 0.7rem; margin-top: 0.5rem;">' + s.date + '</div>' +
+                    '</div>' +
+                    '<button onclick="deleteSubmission(' + i + ')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            var d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); t.style.background = 'none'; t.style.color = ''; });
+            document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+            var activeTab = document.querySelector('.admin-tab[data-tab="' + tab + '"]');
+            if (activeTab) { activeTab.classList.add('active'); activeTab.style.background = 'rgba(245,197,66,0.15)'; activeTab.style.color = 'var(--gold)'; }
+            var content = document.getElementById('adminTab-' + tab);
+            if (content) content.style.display = 'block';
+            if (tab === 'products') { populateCategorySelect(); renderAdminProducts(); }
+            if (tab === 'categories') renderAdminCategories();
+        }
+
+        function populateCategorySelect() {
+            var sel = document.getElementById('adminProdCategory');
+            if (!sel) return;
+            sel.innerHTML = '';
+            var cats = JSON.parse(localStorage.getItem('rajStudio_categories') || '[]');
+            cats.forEach(function(c) {
+                var opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        function renderAdminCategories() {
+            var container = document.getElementById('adminCategoryList');
+            var cats = JSON.parse(localStorage.getItem('rajStudio_categories') || '[]');
+            if (!cats.length) {
+                container.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);"><p>No categories yet</p></div>';
+                return;
+            }
+            container.innerHTML = cats.map(function(c, i) {
+                return '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.8rem 1rem;backdrop-filter:blur(10px);">' +
+                    '<div style="display:flex;align-items:center;gap:10px;"><i class="' + c.icon + '" style="color:var(--gold);font-size:1.1rem;"></i><span style="color:var(--white);font-size:0.9rem;">' + escapeHtml(c.name) + '</span></div>' +
+                    '<button onclick="deleteAdminCategory(\'' + c.id + '\')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div>';
+            }).join('');
+        }
+
+        function deleteAdminCategory(catId) {
+            var cats = JSON.parse(localStorage.getItem('rajStudio_categories') || '[]');
+            cats = cats.filter(function(c) { return c.id !== catId; });
+            localStorage.setItem('rajStudio_categories', JSON.stringify(cats));
+            renderAdminCategories();
+            // Also delete products in that category
+            var prods = JSON.parse(localStorage.getItem('rajStudio_products') || '[]');
+            prods = prods.filter(function(p) { return p.category !== catId; });
+            localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+        }
+
+        function adminAddCategory() {
+            var nameInput = document.getElementById('adminCatName');
+            var iconInput = document.getElementById('adminCatIcon');
+            var name = nameInput.value.trim();
+            var icon = iconInput.value.trim() || 'fas fa-tag';
+            if (!name) { alert('Enter a category name'); nameInput.focus(); return; }
+            var id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            var cats = JSON.parse(localStorage.getItem('rajStudio_categories') || '[]');
+            cats.push({ id: id, name: name, icon: icon });
+            localStorage.setItem('rajStudio_categories', JSON.stringify(cats));
+            nameInput.value = '';
+            iconInput.value = '';
+            renderAdminCategories();
+        }
+
+        var _editingProdId = null;
+
+        function renderAdminProducts() {
+            var container = document.getElementById('adminProductList');
+            var prods = JSON.parse(localStorage.getItem('rajStudio_products') || '[]');
+            var cats = JSON.parse(localStorage.getItem('rajStudio_categories') || '[]');
+            var catMap = {};
+            cats.forEach(function(c) { catMap[c.id] = c.name; });
+            if (!prods.length) {
+                container.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);"><p>No products yet</p></div>';
+                return;
+            }
+            container.innerHTML = prods.map(function(p) {
+                var thumb = p.icon && p.icon.indexOf('data:image') === 0
+                    ? '<img src="' + p.icon + '" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">'
+                    : '<i class="' + (p.icon || 'fas fa-box') + '" style="color:var(--gold);font-size:1.1rem;"></i>';
+                return '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.8rem 1rem;backdrop-filter:blur(10px);">' +
+                    '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">' + thumb +
+                    '<div style="min-width:0;"><div style="color:var(--white);font-size:0.9rem;font-weight:600;">' + escapeHtml(p.name) + '</div>' +
+                    '<div style="color:var(--text-muted);font-size:0.75rem;">' + (catMap[p.category] || p.category) + ' — ₹' + parseFloat(p.price).toFixed(2) + '</div></div></div>' +
+                    '<div style="display:flex;gap:4px;flex-shrink:0;">' +
+                    '<button onclick="adminEditProduct(' + p.id + ')" style="background:none;border:none;color:var(--light-blue);cursor:pointer;font-size:0.85rem;padding:4px;" title="Edit"><i class="fas fa-edit"></i></button>' +
+                    '<button onclick="deleteAdminProduct(' + p.id + ')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div></div>';
+            }).join('');
+        }
+
+        function adminEditProduct(id) {
+            var prods = JSON.parse(localStorage.getItem('rajStudio_products') || '[]');
+            var p = prods.find(function(x) { return x.id === id; });
+            if (!p) return;
+            _editingProdId = id;
+            document.getElementById('adminProdName').value = p.name;
+            document.getElementById('adminProdCategory').value = p.category;
+            document.getElementById('adminProdPrice').value = p.price;
+            document.getElementById('adminProdDesc').value = p.description || '';
+            var isImage = p.icon && p.icon.indexOf('data:image') === 0;
+            if (isImage) {
+                document.getElementById('adminProdIconPreview').querySelector('img').src = p.icon;
+                document.getElementById('adminProdIconPreview').style.display = 'block';
+                document.getElementById('adminProdIconLabel').textContent = 'Change image';
+            } else {
+                document.getElementById('adminProdIconPreview').style.display = 'none';
+                document.getElementById('adminProdIconLabel').textContent = 'Upload product image';
+            }
+            document.getElementById('adminProdIcon').value = '';
+            document.getElementById('adminAddBtn').textContent = 'Update Product';
+            document.getElementById('adminCancelBtn').style.display = 'inline-flex';
+            window.scrollTo({ top: document.getElementById('adminTab-products').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function adminCancelEdit() {
+            _editingProdId = null;
+            document.getElementById('adminProdName').value = '';
+            document.getElementById('adminProdPrice').value = '';
+            document.getElementById('adminProdIcon').value = '';
+            document.getElementById('adminProdIconPreview').style.display = 'none';
+            document.getElementById('adminProdIconLabel').textContent = 'Upload product image';
+            document.getElementById('adminProdDesc').value = '';
+            document.getElementById('adminAddBtn').textContent = 'Add Product';
+            document.getElementById('adminCancelBtn').style.display = 'none';
+        }
+
+        function deleteAdminProduct(prodId) {
+            var prods = JSON.parse(localStorage.getItem('rajStudio_products') || '[]');
+            prods = prods.filter(function(p) { return p.id !== prodId; });
+            localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+            renderAdminProducts();
+        }
+
+        function previewAdminImage(input) {
+            var preview = document.getElementById('adminProdIconPreview');
+            var label = document.getElementById('adminProdIconLabel');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.querySelector('img').src = e.target.result;
+                    preview.style.display = 'block';
+                    label.textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function adminAddProduct() {
+            var name = document.getElementById('adminProdName').value.trim();
+            var category = document.getElementById('adminProdCategory').value;
+            var price = parseFloat(document.getElementById('adminProdPrice').value);
+            var icon = document.getElementById('adminProdIcon').files.length ? document.getElementById('adminProdIconPreview').querySelector('img').src : 'fas fa-box';
+            var desc = document.getElementById('adminProdDesc').value.trim();
+            if (!name || !price) { alert('Enter product name and price'); return; }
+            if (isNaN(price) || price <= 0) { alert('Enter a valid price'); return; }
+            var prods = JSON.parse(localStorage.getItem('rajStudio_products') || '[]');
+            if (_editingProdId !== null) {
+                var idx = prods.findIndex(function(p) { return p.id === _editingProdId; });
+                if (idx !== -1) {
+                    var existingIcon = prods[idx].icon;
+                    prods[idx] = { id: _editingProdId, name: name, category: category, price: price, icon: document.getElementById('adminProdIcon').files.length ? icon : existingIcon, description: desc };
+                }
+                _editingProdId = null;
+            } else {
+                var newId = prods.length ? Math.max.apply(null, prods.map(function(p) { return p.id; })) + 1 : 1;
+                prods.push({ id: newId, name: name, category: category, price: price, icon: icon, description: desc });
+            }
+            localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+            adminCancelEdit();
+            renderAdminProducts();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var pageNames = ['home', 'products', 'customize', 'contact', 'admin'];
+
+            function initPageScrollReveal(pageEl) {
+                pageEl.querySelectorAll('.section-header, .product-card, .feature-card, .option-card, .info-item, .contact-map, .contact-form').forEach(function(el) {
+                    el.classList.add('visible');
+                });
+            }
+
+            function navigateTo(page) {
+                if (!page || page === 'home' && !location.hash) page = 'home';
+                document.querySelectorAll('.page').forEach(function(p) {
+                    p.classList.remove('active');
+                });
+                var target = document.getElementById('page-' + page);
+                if (target) {
+                    target.classList.add('active');
+                    target.scrollTop = 0;
+                    setTimeout(function() { initPageScrollReveal(target); }, 50);
+                }
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                document.querySelectorAll('.bottom-nav-item, .nav-link').forEach(function(link) {
+                    var href = link.getAttribute('href');
+                    if (href) {
+                        var id = href.replace('#', '');
+                        link.classList.toggle('active', id === page);
+                    }
+                });
+                // Reset admin login when navigating away
+                if (page !== 'admin') {
+                    var login = document.getElementById('adminLogin');
+                    var panel = document.getElementById('adminPanel');
+                    if (login && panel) {
+                        login.style.display = 'block';
+                        panel.style.display = 'none';
+                        var err = document.getElementById('adminError');
+                        if (err) err.style.display = 'none';
+                    }
+                }
+            }
+
+            function getPageFromHash() {
+                var hash = location.hash.replace('#', '');
+                return pageNames.indexOf(hash) !== -1 ? hash : 'home';
+            }
+
+            document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    var href = this.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        var id = href.replace('#', '');
+                        if (pageNames.indexOf(id) !== -1) {
+                            e.preventDefault();
+                            history.pushState(null, '', '#' + id);
+                            navigateTo(id);
+                            // Close mobile menu
+                            document.querySelector('.nav-links') && document.querySelector('.nav-links').classList.remove('open');
+                            var h = document.querySelector('.hamburger');
+                            if (h) { h.classList.remove('open'); var hi = h.querySelector('i'); if (hi) hi.className = 'fas fa-bars'; }
+                        }
+                    }
+                });
+            });
+
+            window.addEventListener('hashchange', function() {
+                navigateTo(getPageFromHash());
+            });
+
+            // Hamburger icon toggle
+            document.querySelector('.hamburger') && document.querySelector('.hamburger').addEventListener('click', function() {
+                var icon = this.querySelector('i');
+                if (icon) icon.className = this.classList.contains('open') ? 'fas fa-bars' : 'fas fa-times';
+            });
+
+            // Override CTA button clicks to use page nav
+            document.querySelectorAll('.cta-buttons a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var id = this.getAttribute('href').replace('#', '');
+                    history.pushState(null, '', '#' + id);
+                    navigateTo(id);
+                });
+            });
+
+            navigateTo(getPageFromHash());
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
