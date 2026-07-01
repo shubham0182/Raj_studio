@@ -17,7 +17,7 @@
     // ============================================
     // Product & Category Data (API + localStorage cache)
     // ============================================
-    const API_BASE = '';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
 
     var _products = null;
     var _categories = null;

@@ -444,7 +444,7 @@
     </nav>
 
     <script>
-        var API_BASE = '';
+        var API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
         var _adminToken = sessionStorage.getItem('rajStudio_adminToken');
 
         function getAuthHeaders(contentType) {
