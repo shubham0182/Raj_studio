@@ -716,7 +716,8 @@
     // Ripple Effect for Buttons
     // ============================================
     function createRipple(event) {
-        const button = event.currentTarget;
+        const button = event.target.closest('.btn-primary, .btn-secondary, .btn-outline, .add-to-cart');
+        if (!button) return;
         const circle = document.createElement('span');
         const diameter = Math.max(button.clientWidth, button.clientHeight);
         const radius = diameter / 2;
