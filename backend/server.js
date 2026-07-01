@@ -1,5 +1,5 @@
 const express = require('express');
-const initSqlJs = require('sql.js');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -7,140 +7,24 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const Admin = require('./models/Admin');
+const Category = require('./models/Category');
+const Product = require('./models/Product');
+const Submission = require('./models/Submission');
+
 const app = express();
 const PORT = process.env.PORT || 10000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rajstudio';
 const JWT_SECRET = process.env.JWT_SECRET || 'raj-studio-gift-secret-key-2026';
 
-// Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Ensure uploads directory exists
 var uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// Database setup
-const DB_PATH = path.join(__dirname, 'database.sqlite');
-let db = null;
-
-function saveDb() {
-    if (!db) return;
-    try {
-        const data = db.export();
-        const buffer = Buffer.from(data);
-        fs.writeFileSync(DB_PATH, buffer);
-    } catch (e) {
-        console.error('Failed to save database:', e.message);
-    }
-}
-
-async function initDatabase() {
-    const SQL = await initSqlJs();
-    let savedBuffer = null;
-    if (fs.existsSync(DB_PATH)) {
-        savedBuffer = fs.readFileSync(DB_PATH);
-    }
-    db = new SQL.Database(savedBuffer);
-
-    db.run(`CREATE TABLE IF NOT EXISTS admin (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
-    )`);
-
-    db.run(`CREATE TABLE IF NOT EXISTS categories (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        icon TEXT NOT NULL DEFAULT 'fas fa-tag'
-    )`);
-
-    db.run(`CREATE TABLE IF NOT EXISTS products (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        category TEXT NOT NULL,
-        price REAL NOT NULL,
-        icon TEXT NOT NULL DEFAULT 'fas fa-box',
-        description TEXT DEFAULT ''
-    )`);
-
-    db.run(`CREATE TABLE IF NOT EXISTS submissions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        phone TEXT DEFAULT '',
-        message TEXT NOT NULL,
-        date TEXT NOT NULL
-    )`);
-
-    // Seed default admin if not exists
-    const adminRow = db.exec('SELECT id FROM admin WHERE username = \'admin\'');
-    if (adminRow.length === 0 || adminRow[0].values.length === 0) {
-        const hashed = bcrypt.hashSync('raj123', 10);
-        db.run('INSERT INTO admin (username, password) VALUES (?, ?)', ['admin', hashed]);
-        console.log('Default admin created (username: admin, password: raj123)');
-    }
-
-    // Seed default categories if empty
-    const catRow = db.exec('SELECT COUNT(*) as count FROM categories');
-    if (catRow.length > 0 && catRow[0].values[0][0] === 0) {
-        const defaultCategories = [
-            ['tshirt', 'T-shirt Printing', 'fas fa-tshirt'],
-            ['mug', 'Mug Printing', 'fas fa-mug-hot'],
-            ['frame', 'Photo Frames', 'fas fa-image'],
-            ['pen', 'Pen Printing', 'fas fa-pen']
-        ];
-        defaultCategories.forEach(c => {
-            db.run('INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)', c);
-        });
-        console.log('Default categories seeded');
-    }
-
-    // Seed default products if empty
-    const prodRow = db.exec('SELECT COUNT(*) as count FROM products');
-    if (prodRow.length > 0 && prodRow[0].values[0][0] === 0) {
-        const defaultProducts = [
-            ['Premium Cotton T-Shirt', 'tshirt', 24.99, 'fas fa-tshirt', '100% premium cotton with vibrant print quality'],
-            ['Classic Polo T-Shirt', 'tshirt', 29.99, 'fas fa-tshirt', 'Elegant polo design for corporate events'],
-            ['Ceramic Coffee Mug', 'mug', 12.99, 'fas fa-mug-hot', 'Premium ceramic mug with custom printing'],
-            ['Travel Insulated Mug', 'mug', 18.99, 'fas fa-mug-hot', 'Double-wall insulated for hot & cold drinks'],
-            ['Wooden Photo Frame', 'frame', 15.99, 'fas fa-image', 'Handcrafted wooden frame with glass cover'],
-            ['Acrylic Modern Frame', 'frame', 19.99, 'fas fa-image', 'Sleek acrylic design for contemporary spaces'],
-            ['Executive Ballpoint Pen', 'pen', 8.99, 'fas fa-pen', 'Metal barrel with smooth writing mechanism'],
-            ['Fountain Pen Set', 'pen', 34.99, 'fas fa-pen-fancy', 'Luxury fountain pen with ink and gift box']
-        ];
-        defaultProducts.forEach(p => {
-            db.run('INSERT INTO products (name, category, price, icon, description) VALUES (?, ?, ?, ?, ?)', p);
-        });
-        console.log('Default products seeded');
-    }
-
-    saveDb();
-}
-
-function queryAll(sql, params = []) {
-    const stmt = db.prepare(sql);
-    if (params.length > 0) stmt.bind(params);
-    const results = [];
-    while (stmt.step()) {
-        results.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return results;
-}
-
-function queryOne(sql, params = []) {
-    const all = queryAll(sql, params);
-    return all.length > 0 ? all[0] : null;
-}
-
-function run(sql, params = []) {
-    db.run(sql, params);
-    saveDb();
-}
-
-// Auth middleware
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -155,7 +39,6 @@ function authenticateToken(req, res, next) {
     }
 }
 
-// Multer setup for image uploads
 const storage = multer.diskStorage({
     destination: path.join(__dirname, 'uploads'),
     filename: function (req, file, cb) {
@@ -178,23 +61,53 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-// ============================================
-// API Routes
-// ============================================
+async function seedData() {
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+        const hashed = bcrypt.hashSync('raj123', 10);
+        await Admin.create({ username: 'admin', password: hashed });
+        console.log('Default admin created (username: admin, password: raj123)');
+    }
 
-// Auth
-app.post('/api/auth/login', (req, res) => {
+    const catCount = await Category.countDocuments();
+    if (catCount === 0) {
+        await Category.insertMany([
+            { id: 'tshirt', name: 'T-shirt Printing', icon: 'fas fa-tshirt' },
+            { id: 'mug', name: 'Mug Printing', icon: 'fas fa-mug-hot' },
+            { id: 'frame', name: 'Photo Frames', icon: 'fas fa-image' },
+            { id: 'pen', name: 'Pen Printing', icon: 'fas fa-pen' }
+        ]);
+        console.log('Default categories seeded');
+    }
+
+    const prodCount = await Product.countDocuments();
+    if (prodCount === 0) {
+        await Product.insertMany([
+            { name: 'Premium Cotton T-Shirt', category: 'tshirt', price: 24.99, icon: 'fas fa-tshirt', description: '100% premium cotton with vibrant print quality' },
+            { name: 'Classic Polo T-Shirt', category: 'tshirt', price: 29.99, icon: 'fas fa-tshirt', description: 'Elegant polo design for corporate events' },
+            { name: 'Ceramic Coffee Mug', category: 'mug', price: 12.99, icon: 'fas fa-mug-hot', description: 'Premium ceramic mug with custom printing' },
+            { name: 'Travel Insulated Mug', category: 'mug', price: 18.99, icon: 'fas fa-mug-hot', description: 'Double-wall insulated for hot & cold drinks' },
+            { name: 'Wooden Photo Frame', category: 'frame', price: 15.99, icon: 'fas fa-image', description: 'Handcrafted wooden frame with glass cover' },
+            { name: 'Acrylic Modern Frame', category: 'frame', price: 19.99, icon: 'fas fa-image', description: 'Sleek acrylic design for contemporary spaces' },
+            { name: 'Executive Ballpoint Pen', category: 'pen', price: 8.99, icon: 'fas fa-pen', description: 'Metal barrel with smooth writing mechanism' },
+            { name: 'Fountain Pen Set', category: 'pen', price: 34.99, icon: 'fas fa-pen-fancy', description: 'Luxury fountain pen with ink and gift box' }
+        ]);
+        console.log('Default products seeded');
+    }
+}
+
+app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const admin = queryOne('SELECT * FROM admin WHERE username = ?', [username]);
+    const admin = await Admin.findOne({ username });
     if (!admin || !bcrypt.compareSync(password, admin.password)) {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: admin._id, username: admin.username }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, username: admin.username });
 });
 
@@ -202,42 +115,36 @@ app.get('/api/auth/verify', authenticateToken, (req, res) => {
     res.json({ valid: true, username: req.admin.username });
 });
 
-// Categories
-app.get('/api/categories', (req, res) => {
-    const categories = queryAll('SELECT * FROM categories ORDER BY name ASC');
+app.get('/api/categories', async (req, res) => {
+    const categories = await Category.find().sort({ name: 1 });
     res.json(categories);
 });
 
-app.post('/api/categories', authenticateToken, (req, res) => {
+app.post('/api/categories', authenticateToken, async (req, res) => {
     const { id, name, icon } = req.body;
     if (!id || !name) {
         return res.status(400).json({ error: 'ID and name are required' });
     }
-    try {
-        run('INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)', [id, name, icon || 'fas fa-tag']);
-        res.json({ success: true, id });
-    } catch (err) {
-        if (err.message && err.message.includes('UNIQUE')) {
-            return res.status(409).json({ error: 'Category ID already exists' });
-        }
-        res.status(500).json({ error: err.message });
-    }
+    const exists = await Category.findOne({ id });
+    if (exists) return res.status(409).json({ error: 'Category ID already exists' });
+
+    await Category.create({ id, name, icon: icon || 'fas fa-tag' });
+    res.json({ success: true, id });
 });
 
-app.delete('/api/categories/:id', authenticateToken, (req, res) => {
+app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    run('DELETE FROM products WHERE category = ?', [id]);
-    run('DELETE FROM categories WHERE id = ?', [id]);
+    await Product.deleteMany({ category: id });
+    await Category.deleteOne({ id });
     res.json({ success: true });
 });
 
-// Products
-app.get('/api/products', (req, res) => {
-    const products = queryAll('SELECT * FROM products ORDER BY id ASC');
+app.get('/api/products', async (req, res) => {
+    const products = await Product.find().sort({ _id: 1 });
     res.json(products);
 });
 
-app.post('/api/products', authenticateToken, upload.single('image'), (req, res) => {
+app.post('/api/products', authenticateToken, upload.single('image'), async (req, res) => {
     const { name, category, price, description, icon } = req.body;
     if (!name || !price) {
         return res.status(400).json({ error: 'Name and price are required' });
@@ -248,18 +155,22 @@ app.post('/api/products', authenticateToken, upload.single('image'), (req, res) 
         finalIcon = '/uploads/' + req.file.filename;
     }
 
-    run('INSERT INTO products (name, category, price, icon, description) VALUES (?, ?, ?, ?, ?)',
-        [name, category, parseFloat(price), finalIcon, description || '']);
+    const product = await Product.create({
+        name,
+        category,
+        price: parseFloat(price),
+        icon: finalIcon,
+        description: description || ''
+    });
 
-    const product = queryOne('SELECT * FROM products WHERE id = last_insert_rowid()');
     res.json(product);
 });
 
-app.put('/api/products/:id', authenticateToken, upload.single('image'), (req, res) => {
+app.put('/api/products/:id', authenticateToken, upload.single('image'), async (req, res) => {
     const { id } = req.params;
     const { name, category, price, description, icon } = req.body;
 
-    const existing = queryOne('SELECT * FROM products WHERE id = ?', [parseInt(id)]);
+    const existing = await Product.findById(id);
     if (!existing) return res.status(404).json({ error: 'Product not found' });
 
     let finalIcon = existing.icon;
@@ -273,70 +184,58 @@ app.put('/api/products/:id', authenticateToken, upload.single('image'), (req, re
         finalIcon = icon;
     }
 
-    run('UPDATE products SET name = ?, category = ?, price = ?, icon = ?, description = ? WHERE id = ?',
-        [
-            name || existing.name,
-            category || existing.category,
-            price ? parseFloat(price) : existing.price,
-            finalIcon,
-            description !== undefined ? description : existing.description,
-            parseInt(id)
-        ]);
+    const updated = await Product.findByIdAndUpdate(id, {
+        name: name || existing.name,
+        category: category || existing.category,
+        price: price ? parseFloat(price) : existing.price,
+        icon: finalIcon,
+        description: description !== undefined ? description : existing.description
+    }, { new: true });
 
-    const updated = queryOne('SELECT * FROM products WHERE id = ?', [parseInt(id)]);
     res.json(updated);
 });
 
-app.delete('/api/products/:id', authenticateToken, (req, res) => {
+app.delete('/api/products/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const product = queryOne('SELECT * FROM products WHERE id = ?', [parseInt(id)]);
+    const product = await Product.findById(id);
     if (product && product.icon && product.icon.startsWith('/uploads/')) {
         const filePath = path.join(__dirname, product.icon);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
-    run('DELETE FROM products WHERE id = ?', [parseInt(id)]);
+    await Product.findByIdAndDelete(id);
     res.json({ success: true });
 });
 
-// Submissions
-app.get('/api/submissions', authenticateToken, (req, res) => {
-    const submissions = queryAll('SELECT * FROM submissions ORDER BY rowid DESC');
+app.get('/api/submissions', authenticateToken, async (req, res) => {
+    const submissions = await Submission.find().sort({ _id: -1 });
     res.json(submissions);
 });
 
-app.post('/api/submissions', (req, res) => {
+app.post('/api/submissions', async (req, res) => {
     const { name, email, phone, message } = req.body;
     if (!name || !email || !message) {
         return res.status(400).json({ error: 'Name, email, and message are required' });
     }
 
     const date = new Date().toLocaleString();
-    run('INSERT INTO submissions (name, email, phone, message, date) VALUES (?, ?, ?, ?, ?)',
-        [name, email, phone || '', message, date]);
-
-    const result = queryOne('SELECT last_insert_rowid() as id');
-    res.json({ success: true, id: result ? result.id : null });
+    const result = await Submission.create({ name, email, phone: phone || '', message, date });
+    res.json({ success: true, id: result._id });
 });
 
-app.delete('/api/submissions/:id', authenticateToken, (req, res) => {
+app.delete('/api/submissions/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    run('DELETE FROM submissions WHERE id = ?', [parseInt(id)]);
+    await Submission.findByIdAndDelete(id);
     res.json({ success: true });
 });
 
-// Image upload (standalone endpoint for admin)
 app.post('/api/upload', authenticateToken, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     res.json({ url: '/uploads/' + req.file.filename });
 });
 
-// ============================================
-// Static file serving (frontend)
-// ============================================
 const frontendPath = path.join(__dirname, '..');
 app.use(express.static(frontendPath));
 
-// Serve index.html for all other routes (SPA support)
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
         return res.status(404).json({ error: 'Not found' });
@@ -344,7 +243,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
@@ -359,12 +257,15 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
-initDatabase().then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Raj Studio Gift backend running on http://localhost:${PORT}`);
+mongoose.connect(MONGO_URI)
+    .then(async () => {
+        console.log('Connected to MongoDB');
+        await seedData();
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Raj Studio Gift backend running on http://localhost:${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('Failed to connect to MongoDB:', err.message);
+        process.exit(1);
     });
-}).catch(err => {
-    console.error('Failed to initialize database:', err);
-    process.exit(1);
-});
