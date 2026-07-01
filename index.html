@@ -140,6 +140,7 @@
                 <li><a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="#products" class="nav-link"><i class="fas fa-box"></i> Products</a></li>
                 <li><a href="#customize" class="nav-link"><i class="fas fa-paint-brush"></i> Customize</a></li>
+                <li><a href="#gallery" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
                 <li><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
             </ul>
         </nav>
@@ -253,6 +254,21 @@
     </div>
 
     <!-- Page: Contact -->
+    <!-- Page: Gallery -->
+    <div class="page" id="page-gallery">
+        <section id="gallery" class="gallery">
+            <div class="section-header">
+                <h2>Our Gallery</h2>
+                <p>Browse through our collection of customized gifts</p>
+            </div>
+            <div class="gallery-grid" id="galleryGrid">
+                <div class="gallery-item">
+                    <img src="shubh.jpeg" alt="Gallery Image">
+                </div>
+            </div>
+        </section>
+    </div>
+
     <div class="page" id="page-contact">
         <section id="contact" class="contact">
             <div class="section-header">
@@ -455,6 +471,10 @@
         <a href="#customize" class="bottom-nav-item">
             <i class="fas fa-paint-brush"></i>
             <span>Customize</span>
+        </a>
+        <a href="#gallery" class="bottom-nav-item">
+            <i class="fas fa-images"></i>
+            <span>Gallery</span>
         </a>
         <a href="#contact" class="bottom-nav-item">
             <i class="fas fa-envelope"></i>
@@ -915,7 +935,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var pageNames = ['home', 'products', 'customize', 'contact', 'admin'];
+            var pageNames = ['home', 'products', 'customize', 'gallery', 'contact', 'admin'];
 
             function initPageScrollReveal(pageEl) {
                 pageEl.querySelectorAll('.section-header, .product-card, .feature-card, .option-card, .info-item, .contact-map, .contact-form').forEach(function(el) {
