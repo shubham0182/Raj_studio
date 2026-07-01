@@ -562,7 +562,7 @@
                             '<p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">' + escapeHtml(s.message) + '</p>' +
                             '<div style="color: var(--text-muted); font-size: 0.7rem; margin-top: 0.5rem;">' + (s.date || '') + '</div>' +
                             '</div>' +
-                            '<button onclick="deleteSubmission(' + s.id + ')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>' +
+                            '<button onclick="deleteSubmission(\'' + s._id + '\')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>' +
                             '</div></div>';
                     }).join('');
                 }).catch(function() {
@@ -678,8 +678,8 @@
                         '<div style="min-width:0;"><div style="color:var(--white);font-size:0.9rem;font-weight:600;">' + escapeHtml(p.name) + '</div>' +
                         '<div style="color:var(--text-muted);font-size:0.75rem;">' + (catMap[p.category] || p.category) + ' — ₹' + parseFloat(p.price).toFixed(2) + '</div></div></div>' +
                         '<div style="display:flex;gap:4px;flex-shrink:0;">' +
-                        '<button onclick="adminEditProduct(' + p.id + ')" style="background:none;border:none;color:var(--light-blue);cursor:pointer;font-size:0.85rem;padding:4px;" title="Edit"><i class="fas fa-edit"></i></button>' +
-                        '<button onclick="deleteAdminProduct(' + p.id + ')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div></div>';
+                        '<button onclick="adminEditProduct(\'' + p._id + '\')" style="background:none;border:none;color:var(--light-blue);cursor:pointer;font-size:0.85rem;padding:4px;" title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button onclick="deleteAdminProduct(\'' + p._id + '\')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div></div>';
                 }).join('');
             }).catch(function() {
                 container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Failed to load products</p></div>';
@@ -688,7 +688,7 @@
 
         function adminEditProduct(id) {
             fetch(API_BASE + '/api/products').then(function(r) { return r.json(); }).then(function(prods) {
-                var p = prods.find(function(x) { return x.id === id; });
+                var p = prods.find(function(x) { return x._id === id; });
                 if (!p) return;
                 _editingProdId = id;
                 document.getElementById('adminProdName').value = p.name;
