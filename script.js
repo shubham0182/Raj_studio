@@ -643,7 +643,11 @@
                 '</div>' +
                 '<div class="form-group">' +
                     '<label style="display:block;color:var(--text-muted);font-size:0.8rem;margin-bottom:0.4rem;">Upload Image for Customization (optional)</label>' +
-                    '<input type="file" id="checkoutImage" accept="image/*" style="width:100%;padding:0.6rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text-muted);font-size:0.8rem;outline:none;cursor:pointer;">' +
+                    '<div style="display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.5rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;" onclick="document.getElementById(\'checkoutImage\').click();">' +
+                        '<span style="background:var(--gold);color:var(--dark-blue);padding:0.3rem 0.8rem;border-radius:6px;font-size:0.75rem;font-weight:600;white-space:nowrap;"><i class="fas fa-upload"></i> Choose File</span>' +
+                        '<span id="checkoutFileName" style="color:var(--text-muted);font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">No file chosen</span>' +
+                    '</div>' +
+                    '<input type="file" id="checkoutImage" accept="image/*" style="display:none;" onchange="document.getElementById(\'checkoutFileName\').textContent=this.files[0]?this.files[0].name:\'No file chosen\';">' +
                 '</div>' +
                 '<button onclick="app.submitOrder()" class="btn-primary" style="width:100%;justify-content:center;">Place Order</button>' +
             '</div>';
