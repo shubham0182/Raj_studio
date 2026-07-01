@@ -675,6 +675,15 @@
         });
         var total = cart.reduce(function(sum, item) { return sum + (item.price * item.quantity); }, 0);
 
+        // Always save to localStorage FIRST as reliable backup
+        var orderRecord = { name: name, email: email, phone: phone, items: items, total: total, date: new Date().toLocaleString() };
+        try {
+            var existing = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
+            existing.unshift(orderRecord);
+            localStorage.setItem('rajStudio_orders', JSON.stringify(existing));
+        } catch (e) {}
+
+        // Then try API
         fetch(API_BASE + '/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -683,7 +692,6 @@
             if (!r.ok) throw new Error('Server error');
             return r.json();
         }).then(function() {
-            // Save to Google Sheet as backup
             cart.forEach(function(item) {
                 saveToGoogleSheet({
                     timestamp: new Date().toISOString(),
@@ -697,27 +705,16 @@
                     action: 'Ordered'
                 });
             });
-
-            cart = [];
-            saveCart();
-            updateCartUI();
-            closeCart();
-            closeCheckoutModal();
-            showToast('Order placed successfully! We will contact you at ' + email + '.');
-        }).catch(function() {
-            // Fallback - save order info to localStorage
-            try {
-                var orders = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
-                orders.unshift({ name: name, email: email, phone: phone, items: items, total: total, date: new Date().toLocaleString() });
-                localStorage.setItem('rajStudio_orders', JSON.stringify(orders));
-            } catch (e) {}
-            cart = [];
-            saveCart();
-            updateCartUI();
-            closeCart();
-            closeCheckoutModal();
-            showToast('Order placed successfully! We will contact you at ' + email + '.');
+        }).catch(function(e) {
+            console.warn('Order API save failed, using localStorage:', e);
         });
+
+        cart = [];
+        saveCart();
+        updateCartUI();
+        closeCart();
+        closeCheckoutModal();
+        showToast('Order placed successfully! We will contact you at ' + email + '.');
     }
 
     // ============================================
