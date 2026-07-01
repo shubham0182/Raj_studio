@@ -377,9 +377,11 @@
             const card = document.createElement('div');
             card.className = 'product-card';
             card.style.transitionDelay = `${index * 0.1}s`;
-            var isImageUrl = product.icon && (product.icon.indexOf('data:image') === 0 || product.icon.indexOf('/uploads/') === 0 || product.icon.indexOf('http') === 0);
+            var iconSrc = product.icon;
+            if (iconSrc && iconSrc.indexOf('/uploads/') === 0) iconSrc = API_BASE + iconSrc;
+            var isImageUrl = iconSrc && (iconSrc.indexOf('data:image') === 0 || iconSrc.indexOf('/uploads/') === 0 || iconSrc.indexOf('http') === 0);
             var imageHtml = isImageUrl
-                ? '<img src="' + product.icon + '" alt="' + product.name + '" style="width:100%;height:100%;object-fit:cover;">'
+                ? '<img src="' + iconSrc + '" alt="' + product.name + '" style="width:100%;height:100%;object-fit:cover;">'
                 : '<i class="' + (product.icon || 'fas fa-box') + '"></i>';
             card.innerHTML = `
                 <div class="product-image">

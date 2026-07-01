@@ -756,9 +756,11 @@
                     return;
                 }
                 container.innerHTML = prods.map(function(p) {
-                    var isUrl = p.icon && (p.icon.indexOf('/uploads/') === 0 || p.icon.indexOf('http') === 0);
+                    var iconSrc2 = p.icon;
+                    if (iconSrc2 && iconSrc2.indexOf('/uploads/') === 0) iconSrc2 = API_BASE + iconSrc2;
+                    var isUrl = iconSrc2 && (iconSrc2.indexOf('/uploads/') === 0 || iconSrc2.indexOf('http') === 0);
                     var thumb = isUrl
-                        ? '<img src="' + p.icon + '" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">'
+                        ? '<img src="' + iconSrc2 + '" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">'
                         : '<i class="' + (p.icon || 'fas fa-box') + '" style="color:var(--gold);font-size:1.1rem;"></i>';
                     return '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.8rem 1rem;backdrop-filter:blur(10px);">' +
                         '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">' + thumb +
