@@ -15,8 +15,13 @@
     let cartCount = 0;
 
     // ============================================
-    // Product & Category Data (localStorage-backed)
+    // Product & Category Data (API + localStorage cache)
     // ============================================
+    const API_BASE = '';
+
+    var _products = null;
+    var _categories = null;
+
     var defaultCategories = [
         { id: 'tshirt', name: 'T-shirt Printing', icon: 'fas fa-tshirt' },
         { id: 'mug', name: 'Mug Printing', icon: 'fas fa-mug-hot' },
@@ -35,34 +40,38 @@
         { id: 8, name: "Fountain Pen Set", category: "pen", price: 34.99, icon: "fas fa-pen-fancy", description: "Luxury fountain pen with ink and gift box" }
     ];
 
-    function getCategories() {
-        var stored = localStorage.getItem('rajStudio_categories');
+    function getLocalFallback(key, defaults) {
+        var stored = localStorage.getItem(key);
         if (stored) return JSON.parse(stored);
-        localStorage.setItem('rajStudio_categories', JSON.stringify(defaultCategories));
-        return defaultCategories;
+        if (defaults) localStorage.setItem(key, JSON.stringify(defaults));
+        return defaults || [];
     }
 
-    function saveCategories(cats) {
-        localStorage.setItem('rajStudio_categories', JSON.stringify(cats));
+    async function loadData() {
+        try {
+            var controller = new AbortController();
+            var timeout = setTimeout(function() { controller.abort(); }, 3000);
+            var [prods, cats] = await Promise.all([
+                fetch(API_BASE + '/api/products', { signal: controller.signal }).then(function(r) { return r.ok ? r.json() : Promise.reject(); }),
+                fetch(API_BASE + '/api/categories', { signal: controller.signal }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            ]);
+            clearTimeout(timeout);
+            _products = prods;
+            _categories = cats;
+            localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+            localStorage.setItem('rajStudio_categories', JSON.stringify(cats));
+        } catch (e) {
+            _products = getLocalFallback('rajStudio_products', defaultProducts);
+            _categories = getLocalFallback('rajStudio_categories', defaultCategories);
+        }
     }
 
-    var _nextProdId = null;
-    function getNextProductId() {
-        if (_nextProdId !== null) return _nextProdId++;
-        var prods = getProducts();
-        _nextProdId = prods.length ? Math.max.apply(null, prods.map(function(p) { return p.id; })) + 1 : 1;
-        return _nextProdId++;
+    function getCategories() {
+        return _categories || getLocalFallback('rajStudio_categories', defaultCategories);
     }
 
     function getProducts() {
-        var stored = localStorage.getItem('rajStudio_products');
-        if (stored) return JSON.parse(stored);
-        localStorage.setItem('rajStudio_products', JSON.stringify(defaultProducts));
-        return defaultProducts;
-    }
-
-    function saveProducts(prods) {
-        localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+        return _products || getLocalFallback('rajStudio_products', defaultProducts);
     }
 
     function rebuildFilterButtons() {
@@ -133,7 +142,7 @@
     // ============================================
     // Initialize Application
     // ============================================
-    function init() {
+    async function init() {
         // Get DOM elements
         preloader = document.querySelector('.preloader');
         navbar = document.querySelector('header');
@@ -150,6 +159,9 @@
         filterBtns = document.querySelectorAll('.filter-btn');
         productsGrid = document.querySelector('.products-grid');
         contactForm = document.getElementById('contactForm');
+
+        // Load data from API (with localStorage fallback)
+        await loadData();
 
         // Load cart from localStorage
         loadCart();
@@ -352,7 +364,8 @@
             const card = document.createElement('div');
             card.className = 'product-card';
             card.style.transitionDelay = `${index * 0.1}s`;
-            var imageHtml = product.icon && product.icon.indexOf('data:image') === 0
+            var isImageUrl = product.icon && (product.icon.indexOf('data:image') === 0 || product.icon.indexOf('/uploads/') === 0 || product.icon.indexOf('http') === 0);
+            var imageHtml = isImageUrl
                 ? '<img src="' + product.icon + '" alt="' + product.name + '" style="width:100%;height:100%;object-fit:cover;">'
                 : '<i class="' + (product.icon || 'fas fa-box') + '"></i>';
             card.innerHTML = `
@@ -614,33 +627,35 @@
             return;
         }
 
-        // Save submission to localStorage
-        const subs = JSON.parse(localStorage.getItem('rajStudio_contactSubmissions') || '[]');
-        subs.unshift({
-            name: name,
-            email: email,
-            phone: phone,
-            message: message,
-            date: new Date().toLocaleString()
-        });
-        try {
-            localStorage.setItem('rajStudio_contactSubmissions', JSON.stringify(subs));
-        } catch (e) {
-            console.warn('Could not save submission');
-        }
-
-        // Simulate form submission
         const submitBtn = contactForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Sending...';
         submitBtn.disabled = true;
 
-        setTimeout(() => {
+        fetch(API_BASE + '/api/submissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, phone: phone, message: message })
+        }).then(function(r) {
+            if (!r.ok) throw new Error('Server error');
+            return r.json();
+        }).then(function() {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
             contactForm.reset();
             showToast('Message sent successfully! We\'ll get back to you soon.');
-        }, 1500);
+        }).catch(function() {
+            // Fallback to localStorage if API is down
+            try {
+                var subs = JSON.parse(localStorage.getItem('rajStudio_contactSubmissions') || '[]');
+                subs.unshift({ name: name, email: email, phone: phone, message: message, date: new Date().toLocaleString() });
+                localStorage.setItem('rajStudio_contactSubmissions', JSON.stringify(subs));
+            } catch (e) {}
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            contactForm.reset();
+            showToast('Message sent successfully! We\'ll get back to you soon.');
+        });
     }
 
     // ============================================
@@ -729,7 +744,13 @@
     window.app = {
         removeFromCart: removeFromCart,
         updateQuantity: updateQuantity,
-        toggleCart: toggleCart
+        toggleCart: toggleCart,
+        refreshData: function() {
+            loadData().then(function() {
+                rebuildFilterButtons();
+                renderProducts(getProducts());
+            });
+        }
     };
 
     // ============================================
