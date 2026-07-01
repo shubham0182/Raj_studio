@@ -466,7 +466,7 @@
         var API_BASE = localStorage.getItem('rajStudio_apiUrl');
         if (!API_BASE) {
             if (location.protocol === 'file:') {
-                API_BASE = 'http://localhost:3000';
+                API_BASE = 'http://localhost:10000';
             } else if (location.hostname.includes('vercel')) {
                 API_BASE = 'https://raj-studio.onrender.com';
             } else {
@@ -784,9 +784,11 @@
                 document.getElementById('adminProdCategory').value = p.category;
                 document.getElementById('adminProdPrice').value = p.price;
                 document.getElementById('adminProdDesc').value = p.description || '';
-                var isUrl = p.icon && (p.icon.indexOf('/uploads/') === 0 || p.icon.indexOf('data:image') === 0);
+                var iconSrc3 = p.icon;
+                if (iconSrc3 && iconSrc3.indexOf('/uploads/') === 0) iconSrc3 = API_BASE + iconSrc3;
+                var isUrl = iconSrc3 && (iconSrc3.indexOf('/uploads/') === 0 || iconSrc3.indexOf('data:image') === 0 || iconSrc3.indexOf('http') === 0);
                 if (isUrl) {
-                    document.getElementById('adminProdIconPreview').querySelector('img').src = p.icon;
+                    document.getElementById('adminProdIconPreview').querySelector('img').src = iconSrc3;
                     document.getElementById('adminProdIconPreview').style.display = 'block';
                     document.getElementById('adminProdIconLabel').textContent = 'Change image';
                 } else {

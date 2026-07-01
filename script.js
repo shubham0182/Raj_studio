@@ -17,9 +17,15 @@
     // ============================================
     // Product & Category Data (API + localStorage cache)
     // ============================================
-    var API_BASE = localStorage.getItem('rajStudio_apiUrl');
+    var API_BASE = window.API_BASE || localStorage.getItem('rajStudio_apiUrl');
     if (!API_BASE) {
-        API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        if (location.protocol === 'file:') {
+            API_BASE = 'http://localhost:10000';
+        } else if (location.hostname.includes('vercel')) {
+            API_BASE = 'https://raj-studio.onrender.com';
+        } else {
+            API_BASE = '';
+        }
     }
 
     var _products = null;
