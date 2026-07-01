@@ -156,25 +156,33 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.post('/api/products', authenticateToken, upload.single('image'), async (req, res) => {
-    const { name, category, price, description, icon } = req.body;
-    if (!name || !price) {
-        return res.status(400).json({ error: 'Name and price are required' });
+    try {
+        const { name, category, price, description, icon } = req.body;
+        if (!name || !price) {
+            return res.status(400).json({ error: 'Name and price are required' });
+        }
+        if (!category) {
+            return res.status(400).json({ error: 'Category is required' });
+        }
+
+        let finalIcon = icon || 'fas fa-box';
+        if (req.file) {
+            finalIcon = '/uploads/' + req.file.filename;
+        }
+
+        const product = await Product.create({
+            name,
+            category,
+            price: parseFloat(price),
+            icon: finalIcon,
+            description: description || ''
+        });
+
+        res.json(product);
+    } catch (err) {
+        console.error('Product create error:', err);
+        res.status(400).json({ error: err.message || 'Failed to create product' });
     }
-
-    let finalIcon = icon || 'fas fa-box';
-    if (req.file) {
-        finalIcon = '/uploads/' + req.file.filename;
-    }
-
-    const product = await Product.create({
-        name,
-        category,
-        price: parseFloat(price),
-        icon: finalIcon,
-        description: description || ''
-    });
-
-    res.json(product);
 });
 
 app.put('/api/products/:id', authenticateToken, upload.single('image'), async (req, res) => {

@@ -780,7 +780,7 @@
 
             fetch(url, { method: method, headers: headers, body: formData })
                 .then(function(r) {
-                    if (!r.ok) throw new Error('Failed to save product');
+                    if (!r.ok) return r.json().then(function(err) { throw new Error(err.error || 'Failed to save product'); });
                     adminCancelEdit();
                     renderAdminProducts();
                     if (window.app && window.app.refreshData) window.app.refreshData();
