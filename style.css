@@ -195,6 +195,42 @@ header.scrolled {
     color: var(--gold);
 }
 
+.cart-link-desktop {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-right: 0.5rem;
+}
+
+.cart-count-badge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: var(--gold);
+    color: var(--dark-blue);
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+}
+
+.bottom-nav-item .cart-count-badge {
+    top: 2px;
+    right: 50%;
+    transform: translateX(calc(50% + 12px));
+    font-size: 0.6rem;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+}
+
 .hamburger {
     display: none;
     flex-direction: column;

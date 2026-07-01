@@ -184,6 +184,7 @@
 
         // Load cart from localStorage
         loadCart();
+        updateCartUI();
 
         // Build filter buttons from dynamic categories
         rebuildFilterButtons();
@@ -538,8 +539,18 @@
     function updateCartUI() {
         if (!cartItemsContainer || !cartTotalEl) return;
 
-        // Update cart count in nav (if we had one)
+        // Update cart count badges
         cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        var desktopBadge = document.getElementById('cartCountDesktop');
+        var mobileBadge = document.getElementById('cartCountMobile');
+        if (desktopBadge) {
+            desktopBadge.textContent = cartCount;
+            desktopBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+        }
+        if (mobileBadge) {
+            mobileBadge.textContent = cartCount;
+            mobileBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+        }
 
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = `
