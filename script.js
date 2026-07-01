@@ -622,6 +622,9 @@
         var existing = document.querySelector('.checkout-modal');
         if (existing) existing.remove();
 
+        var customerData = {};
+        try { customerData = JSON.parse(localStorage.getItem('rajStudio_customer') || '{}'); } catch (e) {}
+
         var overlay = document.createElement('div');
         overlay.className = 'checkout-overlay';
         overlay.onclick = closeCheckoutModal;
@@ -639,13 +642,13 @@
                     '<span class="checkout-total">₹' + total.toFixed(2) + '</span>' +
                 '</div>' +
                 '<div class="form-group">' +
-                    '<input type="text" id="checkoutName" placeholder="Your Full Name *" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                    '<input type="text" id="checkoutName" placeholder="Your Full Name *" value="' + escapeHtml(customerData.name || '') + '" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
                 '</div>' +
                 '<div class="form-group">' +
-                    '<input type="email" id="checkoutEmail" placeholder="Your Gmail / Email *" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                    '<input type="email" id="checkoutEmail" placeholder="Your Gmail / Email *" value="' + escapeHtml(customerData.email || '') + '" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
                 '</div>' +
                 '<div class="form-group">' +
-                    '<input type="tel" id="checkoutPhone" placeholder="Phone Number" style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                    '<input type="tel" id="checkoutPhone" placeholder="Phone Number" value="' + escapeHtml(customerData.phone || '') + '" style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
                 '</div>' +
                 '<button onclick="app.submitOrder()" class="btn-primary" style="width:100%;justify-content:center;">Place Order</button>' +
             '</div>';
@@ -653,6 +656,11 @@
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
         setTimeout(function() { overlay.classList.add('open'); }, 10);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
     function closeCheckoutModal() {
@@ -680,6 +688,9 @@
         }
 
         if (cart.length === 0) return;
+
+        // Save customer details for auto-complete next time
+        try { localStorage.setItem('rajStudio_customer', JSON.stringify({ name: name, email: email, phone: phone })); } catch (e) {}
 
         var items = cart.map(function(item) {
             return { name: item.name, price: item.price, quantity: item.quantity };
