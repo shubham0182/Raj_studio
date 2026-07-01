@@ -596,6 +596,15 @@
                 renderAdminOrders();
             }).catch(function(e) { alert('Error: ' + e.message); });
         }
+        function deleteLocalOrder(index) {
+            if (!confirm('Delete this order?')) return;
+            try {
+                var orders = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
+                orders.splice(index, 1);
+                localStorage.setItem('rajStudio_orders', JSON.stringify(orders));
+                renderAdminOrders();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
 
         function renderAdminOrders() {
             var container = document.getElementById('adminOrders');
@@ -628,7 +637,7 @@
         }
 
         function renderOrdersList(container, orders) {
-            container.innerHTML = orders.map(function(o) {
+            container.innerHTML = orders.map(function(o, idx) {
                 var itemsHtml = '';
                 if (o.items && o.items.length) {
                     itemsHtml = o.items.map(function(item) {
@@ -657,7 +666,7 @@
                     '<div style="color: var(--text-muted); font-size: 0.7rem; margin-top: 0.5rem;">' + (o.date || '') + '</div>' +
                     (isLocal ? '<div style="color:#ff9800;font-size:0.7rem;margin-top:0.25rem;"><i class="fas fa-exclamation-triangle"></i> Saved locally</div>' : '') +
                     '</div>' +
-                    (isLocal ? '' : '<button onclick="deleteOrder(\'' + o._id + '\')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>') +
+                    '<button onclick="' + (isLocal ? 'deleteLocalOrder(' + idx + ')' : 'deleteOrder(\'' + o._id + '\')') + '" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>' +
                     '</div></div>';
             }).join('');
         }
