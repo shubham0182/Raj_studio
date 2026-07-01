@@ -8,6 +8,8 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const Admin = require('./models/Admin');
 const Category = require('./models/Category');
@@ -18,6 +20,12 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/rajstudio';
 const JWT_SECRET = process.env.JWT_SECRET || 'raj-studio-gift-secret-key-2026';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -41,27 +49,39 @@ function authenticateToken(req, res, next) {
     }
 }
 
-const storage = multer.diskStorage({
-    destination: path.join(__dirname, 'uploads'),
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp|svg/;
-    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    const mime = allowed.test(file.mimetype);
-    if (ext && mime) return cb(null, true);
-    cb(new Error('Only image files (jpg, png, gif, webp, svg) are allowed'));
-};
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: fileFilter
-});
+const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+var storage, upload;
+if (useCloudinary) {
+    storage = new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: {
+            folder: 'raj-studio',
+            allowed_formats: ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg'],
+            transformation: [{ width: 800, height: 800, crop: 'limit' }]
+        }
+    });
+    upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } });
+    console.log('Using Cloudinary for image storage');
+} else {
+    storage = multer.diskStorage({
+        destination: path.join(__dirname, 'uploads'),
+        filename: function (req, file, cb) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, uniqueSuffix + path.extname(file.originalname));
+        }
+    });
+    upload = multer({
+        storage: storage,
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: function (req, file, cb) {
+            const allowed = /jpeg|jpg|png|gif|webp|svg/;
+            const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+            const mime = allowed.test(file.mimetype);
+            if (ext && mime) return cb(null, true);
+            cb(new Error('Only image files (jpg, png, gif, webp, svg) are allowed'));
+        }
+    });
+}
 
 async function seedData() {
     const adminCount = await Admin.countDocuments();
@@ -167,7 +187,7 @@ app.post('/api/products', authenticateToken, upload.single('image'), async (req,
 
         let finalIcon = icon || 'fas fa-box';
         if (req.file) {
-            finalIcon = '/uploads/' + req.file.filename;
+            finalIcon = useCloudinary ? req.file.path : '/uploads/' + req.file.filename;
         }
 
         const product = await Product.create({
@@ -194,8 +214,11 @@ app.put('/api/products/:id', authenticateToken, upload.single('image'), async (r
 
     let finalIcon = existing.icon;
     if (req.file) {
-        finalIcon = '/uploads/' + req.file.filename;
-        if (existing.icon && existing.icon.startsWith('/uploads/')) {
+        finalIcon = useCloudinary ? req.file.path : '/uploads/' + req.file.filename;
+        if (useCloudinary && existing.icon && existing.icon.includes('res.cloudinary.com')) {
+            const publicId = existing.icon.split('/').pop().split('.')[0];
+            cloudinary.uploader.destroy('raj-studio/' + publicId).catch(function() {});
+        } else if (existing.icon && existing.icon.startsWith('/uploads/')) {
             const oldPath = path.join(__dirname, existing.icon);
             if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
         }
@@ -217,9 +240,14 @@ app.put('/api/products/:id', authenticateToken, upload.single('image'), async (r
 app.delete('/api/products/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
-    if (product && product.icon && product.icon.startsWith('/uploads/')) {
-        const filePath = path.join(__dirname, product.icon);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    if (product && product.icon) {
+        if (product.icon.includes('res.cloudinary.com')) {
+            const publicId = 'raj-studio/' + product.icon.split('/').pop().split('.')[0];
+            cloudinary.uploader.destroy(publicId).catch(function() {});
+        } else if (product.icon.startsWith('/uploads/')) {
+            const filePath = path.join(__dirname, product.icon);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        }
     }
     await Product.findByIdAndDelete(id);
     res.json({ success: true });
@@ -249,7 +277,7 @@ app.delete('/api/submissions/:id', authenticateToken, async (req, res) => {
 
 app.post('/api/upload', authenticateToken, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    res.json({ url: '/uploads/' + req.file.filename });
+    res.json({ url: useCloudinary ? req.file.path : '/uploads/' + req.file.filename });
 });
 
 const frontendPath = path.join(__dirname, '..');
