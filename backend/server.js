@@ -98,6 +98,15 @@ async function seedData() {
     }
 }
 
+app.get('/api/status', (req, res) => {
+    const dbState = mongoose.connection.readyState;
+    res.json({
+        server: true,
+        mongodb: dbState === 1,
+        mongodbState: dbState
+    });
+});
+
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {

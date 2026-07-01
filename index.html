@@ -329,6 +329,16 @@
                     </div>
                     <button onclick="adminLogout()" class="btn-outline" style="font-size: 0.8rem;">Logout</button>
                 </div>
+                <div id="statusIndicators" style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1rem; padding:0.6rem 1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; backdrop-filter:blur(10px);">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span id="serverDot" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block;"></span>
+                        <span style="color:var(--text-muted);font-size:0.8rem;">Server</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span id="dbDot" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block;"></span>
+                        <span style="color:var(--text-muted);font-size:0.8rem;">Database</span>
+                    </div>
+                </div>
                 <!-- Tab: Submissions -->
                 <div id="adminTab-submissions" class="admin-tab-content" style="display: block;">
                     <div id="adminSubmissions" style="display: flex; flex-direction: column; gap: 1rem;"></div>
@@ -477,11 +487,35 @@
                 populateCategorySelect();
                 renderAdminProducts();
                 renderAdminCategories();
+                startStatusPolling();
             }).catch(function() {
                 err.style.display = 'block';
                 pass.value = '';
                 pass.focus();
             });
+        }
+
+        function checkStatus() {
+            fetch(API_BASE + '/api/status')
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function(data) {
+                    var sDot = document.getElementById('serverDot');
+                    var dDot = document.getElementById('dbDot');
+                    if (sDot) { sDot.style.background = data.server ? '#4caf50' : '#f44336'; sDot.style.boxShadow = data.server ? '0 0 6px #4caf50' : 'none'; }
+                    if (dDot) { dDot.style.background = data.mongodb ? '#4caf50' : '#f44336'; dDot.style.boxShadow = data.mongodb ? '0 0 6px #4caf50' : 'none'; }
+                })
+                .catch(function() {
+                    var sDot = document.getElementById('serverDot');
+                    var dDot = document.getElementById('dbDot');
+                    if (sDot) { sDot.style.background = '#f44336'; sDot.style.boxShadow = 'none'; }
+                    if (dDot) { dDot.style.background = '#f44336'; dDot.style.boxShadow = 'none'; }
+                });
+        }
+
+        function startStatusPolling() {
+            checkStatus();
+            if (window._statusInterval) clearInterval(window._statusInterval);
+            window._statusInterval = setInterval(checkStatus, 15000);
         }
 
         function adminLogout() {
@@ -491,6 +525,7 @@
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('adminPass').value = '';
             document.getElementById('adminError').style.display = 'none';
+            if (window._statusInterval) { clearInterval(window._statusInterval); window._statusInterval = null; }
         }
 
         function deleteSubmission(id) {
@@ -760,6 +795,7 @@
                         document.getElementById('adminLogin').style.display = 'none';
                         document.getElementById('adminPanel').style.display = 'block';
                         switchAdminTab('submissions');
+                        startStatusPolling();
                     } else {
                         sessionStorage.removeItem('rajStudio_adminToken');
                         _adminToken = null;
