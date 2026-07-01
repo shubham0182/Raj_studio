@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -14,7 +16,7 @@ const Submission = require('./models/Submission');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rajstudio';
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/rajstudio';
 const JWT_SECRET = process.env.JWT_SECRET || 'raj-studio-gift-secret-key-2026';
 
 app.use(cors());
@@ -259,7 +261,7 @@ app.use((err, req, res, next) => {
 
 mongoose.connect(MONGO_URI)
     .then(async () => {
-        console.log('Connected to MongoDB');
+        console.log('MongoDB Connected');
         await seedData();
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`Raj Studio Gift backend running on http://localhost:${PORT}`);
