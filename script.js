@@ -17,7 +17,10 @@
     // ============================================
     // Product & Category Data (API + localStorage cache)
     // ============================================
-    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    var API_BASE = localStorage.getItem('rajStudio_apiUrl');
+    if (!API_BASE) {
+        API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    }
 
     var _products = null;
     var _categories = null;

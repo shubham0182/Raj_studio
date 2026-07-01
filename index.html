@@ -6,7 +6,7 @@
     <title>Raj Studio Gift - Corporate & Customized Gift Solutions</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="icon" type="image/jpeg" href="shubh.jpeg">
     <style>
         .bottom-nav {
             display: none;
@@ -134,7 +134,7 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <img src="logo.svg" alt="Raj Studio Gift" class="logo-img">
+                <img src="shubh.jpeg" alt="Raj Studio Gift" class="logo-img">
             </div>
             <ul class="nav-links">
                 <li><a href="#home" class="nav-link">Home</a></li>
@@ -390,7 +390,7 @@
     <footer>
         <div class="footer-content">
             <div class="footer-logo">
-                <img src="logo.svg" alt="Raj Studio Gift" class="footer-logo-img">
+                <img src="shubh.jpeg" alt="Raj Studio Gift" class="footer-logo-img">
             </div>
             <p>Premium Corporate Gift Solutions</p>
             <div class="social-icons">
@@ -444,7 +444,10 @@
     </nav>
 
     <script>
-        var API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        var API_BASE = localStorage.getItem('rajStudio_apiUrl');
+        if (!API_BASE) {
+            API_BASE = location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        }
         var _adminToken = sessionStorage.getItem('rajStudio_adminToken');
 
         function getAuthHeaders(contentType) {

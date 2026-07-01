@@ -128,12 +128,15 @@ header.scrolled {
 
 .logo-img {
     height: 50px;
-    width: auto;
+    width: 50px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 @media (max-width: 480px) {
     .logo-img {
         height: 36px;
+        width: 36px;
     }
 }
 
@@ -990,12 +993,15 @@ footer {
 
 .footer-logo-img {
     height: 60px;
-    width: auto;
+    width: 60px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 @media (max-width: 480px) {
     .footer-logo-img {
         height: 44px;
+        width: 44px;
     }
 }
 
