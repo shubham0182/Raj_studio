@@ -282,13 +282,13 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
-    const { name, email, phone, items, total } = req.body;
+    const { name, email, phone, items, total, image } = req.body;
     if (!name || !email || !items || !items.length) {
         return res.status(400).json({ error: 'Name, email, and items are required' });
     }
 
     const date = new Date().toLocaleString();
-    const result = await Order.create({ name, email, phone: phone || '', items, total, date });
+    const result = await Order.create({ name, email, phone: phone || '', items, total, date, image: image || '' });
     res.json({ success: true, id: result._id });
 });
 

@@ -6,7 +6,8 @@ const orderSchema = new mongoose.Schema({
     phone: { type: String, default: '' },
     items: { type: Array, required: true },
     total: { type: Number, required: true },
-    date: { type: String, required: true }
+    date: { type: String, required: true },
+    image: { type: String, default: '' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);
