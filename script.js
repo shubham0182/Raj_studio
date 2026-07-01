@@ -33,14 +33,14 @@
     ];
 
     var defaultProducts = [
-        { id: 1, name: "Premium Cotton T-Shirt", category: "tshirt", price: 24.99, icon: "fas fa-tshirt", description: "100% premium cotton with vibrant print quality" },
-        { id: 2, name: "Classic Polo T-Shirt", category: "tshirt", price: 29.99, icon: "fas fa-tshirt", description: "Elegant polo design for corporate events" },
-        { id: 3, name: "Ceramic Coffee Mug", category: "mug", price: 12.99, icon: "fas fa-mug-hot", description: "Premium ceramic mug with custom printing" },
-        { id: 4, name: "Travel Insulated Mug", category: "mug", price: 18.99, icon: "fas fa-mug-hot", description: "Double-wall insulated for hot & cold drinks" },
-        { id: 5, name: "Wooden Photo Frame", category: "frame", price: 15.99, icon: "fas fa-image", description: "Handcrafted wooden frame with glass cover" },
-        { id: 6, name: "Acrylic Modern Frame", category: "frame", price: 19.99, icon: "fas fa-image", description: "Sleek acrylic design for contemporary spaces" },
-        { id: 7, name: "Executive Ballpoint Pen", category: "pen", price: 8.99, icon: "fas fa-pen", description: "Metal barrel with smooth writing mechanism" },
-        { id: 8, name: "Fountain Pen Set", category: "pen", price: 34.99, icon: "fas fa-pen-fancy", description: "Luxury fountain pen with ink and gift box" }
+        { id: '1', name: "Premium Cotton T-Shirt", category: "tshirt", price: 24.99, icon: "fas fa-tshirt", description: "100% premium cotton with vibrant print quality" },
+        { id: '2', name: "Classic Polo T-Shirt", category: "tshirt", price: 29.99, icon: "fas fa-tshirt", description: "Elegant polo design for corporate events" },
+        { id: '3', name: "Ceramic Coffee Mug", category: "mug", price: 12.99, icon: "fas fa-mug-hot", description: "Premium ceramic mug with custom printing" },
+        { id: '4', name: "Travel Insulated Mug", category: "mug", price: 18.99, icon: "fas fa-mug-hot", description: "Double-wall insulated for hot & cold drinks" },
+        { id: '5', name: "Wooden Photo Frame", category: "frame", price: 15.99, icon: "fas fa-image", description: "Handcrafted wooden frame with glass cover" },
+        { id: '6', name: "Acrylic Modern Frame", category: "frame", price: 19.99, icon: "fas fa-image", description: "Sleek acrylic design for contemporary spaces" },
+        { id: '7', name: "Executive Ballpoint Pen", category: "pen", price: 8.99, icon: "fas fa-pen", description: "Metal barrel with smooth writing mechanism" },
+        { id: '8', name: "Fountain Pen Set", category: "pen", price: 34.99, icon: "fas fa-pen-fancy", description: "Luxury fountain pen with ink and gift box" }
     ];
 
     function getLocalFallback(key, defaults) {
@@ -69,6 +69,13 @@
         } catch (e) {
             _products = getLocalFallback('rajStudio_products', defaultProducts);
             _categories = getLocalFallback('rajStudio_categories', defaultCategories);
+        }
+        // Normalize all product IDs to strings
+        if (_products) {
+            _products = _products.map(function(p) {
+                if (typeof p.id !== 'string') p.id = String(p.id);
+                return p;
+            });
         }
     }
 
@@ -549,12 +556,12 @@
                     <h4>${item.name}</h4>
                     <p>₹${item.price.toFixed(2)} each</p>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <button class="cart-item-remove" onclick="app.updateQuantity(${item.id}, -1)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">-</button>
+                        <button class="cart-item-remove" onclick="app.updateQuantity('${item.id}', -1)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">-</button>
                         <span style="color: var(--gold); font-weight: 600;">${item.quantity}</span>
-                        <button class="cart-item-remove" onclick="app.updateQuantity(${item.id}, 1)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">+</button>
+                        <button class="cart-item-remove" onclick="app.updateQuantity('${item.id}', 1)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">+</button>
                     </div>
                 </div>
-                <button class="cart-item-remove" onclick="app.removeFromCart(${item.id})" title="Remove">
+                <button class="cart-item-remove" onclick="app.removeFromCart('${item.id}')" title="Remove">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
