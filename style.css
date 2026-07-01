@@ -1913,6 +1913,80 @@ footer {
 }
 
 /* ============================================ */
+/* Checkout Modal */
+/* ============================================ */
+.checkout-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.checkout-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+.checkout-modal {
+    background: linear-gradient(135deg, #0f1e3a, #1a2a4a);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    animation: modalSlideUp 0.3s ease;
+}
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.checkout-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.checkout-modal-header h3 {
+    color: var(--white);
+    font-size: 1.1rem;
+}
+.checkout-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+.checkout-close:hover {
+    color: var(--gold);
+}
+.checkout-modal-body .form-group {
+    margin-bottom: 0.75rem;
+}
+.checkout-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+.checkout-total {
+    color: var(--gold);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* ============================================ */
 /* Scrollbar Styling */
 /* ============================================ */
 ::-webkit-scrollbar {

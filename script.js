@@ -59,9 +59,12 @@
                 fetch(API_BASE + '/api/categories', { signal: controller.signal }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
             ]);
             clearTimeout(timeout);
-            _products = prods;
+            _products = prods.map(function(p) {
+                if (!p.id) p.id = p._id ? p._id.toString() : p.id;
+                return p;
+            });
             _categories = cats;
-            localStorage.setItem('rajStudio_products', JSON.stringify(prods));
+            localStorage.setItem('rajStudio_products', JSON.stringify(_products));
             localStorage.setItem('rajStudio_categories', JSON.stringify(cats));
         } catch (e) {
             _products = getLocalFallback('rajStudio_products', defaultProducts);
@@ -391,7 +394,7 @@
         document.querySelectorAll('.add-to-cart').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                const productId = parseInt(this.getAttribute('data-id'));
+                const productId = this.getAttribute('data-id');
                 addToCart(productId);
             });
         });
@@ -585,12 +588,93 @@
         if (cart.length === 0) return;
 
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-        if (confirm(`Proceed to checkout?\n\nTotal: ₹${total.toFixed(2)}\n\nThank you for your order! We'll contact you shortly.`)) {
-            // Save full order to Google Sheet
-            cart.forEach(item => {
+
+        showCheckoutModal(total);
+    }
+
+    function showCheckoutModal(total) {
+        var existing = document.querySelector('.checkout-modal');
+        if (existing) existing.remove();
+
+        var overlay = document.createElement('div');
+        overlay.className = 'checkout-overlay';
+        overlay.onclick = closeCheckoutModal;
+
+        var modal = document.createElement('div');
+        modal.className = 'checkout-modal';
+        modal.innerHTML =
+            '<div class="checkout-modal-header">' +
+                '<h3>Complete Your Order</h3>' +
+                '<button class="checkout-close" onclick="app.closeCheckoutModal()">&times;</button>' +
+            '</div>' +
+            '<div class="checkout-modal-body">' +
+                '<div class="checkout-summary">' +
+                    '<span>Total:</span>' +
+                    '<span class="checkout-total">₹' + total.toFixed(2) + '</span>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<input type="text" id="checkoutName" placeholder="Your Full Name *" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<input type="email" id="checkoutEmail" placeholder="Your Gmail / Email *" required style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<input type="tel" id="checkoutPhone" placeholder="Phone Number" style="width:100%;padding:0.75rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--white);font-size:0.85rem;outline:none;">' +
+                '</div>' +
+                '<button onclick="app.submitOrder()" class="btn-primary" style="width:100%;justify-content:center;">Place Order</button>' +
+            '</div>';
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        setTimeout(function() { overlay.classList.add('open'); }, 10);
+    }
+
+    function closeCheckoutModal() {
+        var overlay = document.querySelector('.checkout-overlay');
+        if (overlay) {
+            overlay.classList.remove('open');
+            setTimeout(function() { overlay.remove(); }, 300);
+        }
+    }
+
+    function submitOrder() {
+        var name = document.getElementById('checkoutName').value.trim();
+        var email = document.getElementById('checkoutEmail').value.trim();
+        var phone = document.getElementById('checkoutPhone').value.trim();
+
+        if (!name || !email) {
+            showToast('Please fill in your name and email!', true);
+            return;
+        }
+
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showToast('Please enter a valid email address!', true);
+            return;
+        }
+
+        if (cart.length === 0) return;
+
+        var items = cart.map(function(item) {
+            return { name: item.name, price: item.price, quantity: item.quantity };
+        });
+        var total = cart.reduce(function(sum, item) { return sum + (item.price * item.quantity); }, 0);
+
+        fetch(API_BASE + '/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, phone: phone, items: items, total: total })
+        }).then(function(r) {
+            if (!r.ok) throw new Error('Server error');
+            return r.json();
+        }).then(function() {
+            // Save to Google Sheet as backup
+            cart.forEach(function(item) {
                 saveToGoogleSheet({
                     timestamp: new Date().toISOString(),
+                    name: name,
+                    email: email,
+                    phone: phone,
                     product: item.name,
                     price: item.price,
                     quantity: item.quantity,
@@ -603,8 +687,22 @@
             saveCart();
             updateCartUI();
             closeCart();
-            showToast('Order placed successfully!');
-        }
+            closeCheckoutModal();
+            showToast('Order placed successfully! We will contact you at ' + email + '.');
+        }).catch(function() {
+            // Fallback - save order info to localStorage
+            try {
+                var orders = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
+                orders.unshift({ name: name, email: email, phone: phone, items: items, total: total, date: new Date().toLocaleString() });
+                localStorage.setItem('rajStudio_orders', JSON.stringify(orders));
+            } catch (e) {}
+            cart = [];
+            saveCart();
+            updateCartUI();
+            closeCart();
+            closeCheckoutModal();
+            showToast('Order placed successfully! We will contact you at ' + email + '.');
+        });
     }
 
     // ============================================
@@ -749,6 +847,8 @@
         removeFromCart: removeFromCart,
         updateQuantity: updateQuantity,
         toggleCart: toggleCart,
+        closeCheckoutModal: closeCheckoutModal,
+        submitOrder: submitOrder,
         refreshData: function() {
             loadData().then(function() {
                 rebuildFilterButtons();

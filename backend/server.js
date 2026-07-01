@@ -15,6 +15,7 @@ const Admin = require('./models/Admin');
 const Category = require('./models/Category');
 const Product = require('./models/Product');
 const Submission = require('./models/Submission');
+const Order = require('./models/Order');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -272,6 +273,28 @@ app.post('/api/submissions', async (req, res) => {
 app.delete('/api/submissions/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     await Submission.findByIdAndDelete(id);
+    res.json({ success: true });
+});
+
+app.get('/api/orders', authenticateToken, async (req, res) => {
+    const orders = await Order.find().sort({ _id: -1 });
+    res.json(orders);
+});
+
+app.post('/api/orders', async (req, res) => {
+    const { name, email, phone, items, total } = req.body;
+    if (!name || !email || !items || !items.length) {
+        return res.status(400).json({ error: 'Name, email, and items are required' });
+    }
+
+    const date = new Date().toLocaleString();
+    const result = await Order.create({ name, email, phone: phone || '', items, total, date });
+    res.json({ success: true, id: result._id });
+});
+
+app.delete('/api/orders/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    await Order.findByIdAndDelete(id);
     res.json({ success: true });
 });
 
