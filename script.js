@@ -8,7 +8,7 @@
     // ============================================
     // DOM Elements - Initialize after DOM ready
     // ============================================
-    let preloader, navbar, navLinks, hamburger, cartSidebar, cartOverlay;
+    let preloader, navbar, navLinks, cartSidebar, cartOverlay;
     let closeCartBtn, cartItemsContainer, cartTotalEl, checkoutBtn;
     let filterBtns, productsGrid, contactForm;
     let cart = [];
@@ -166,7 +166,6 @@
         preloader = document.querySelector('.preloader');
         navbar = document.querySelector('header');
         navLinks = document.querySelector('.nav-links');
-        hamburger = document.querySelector('.hamburger');
         cartSidebar = document.getElementById('cartSidebar');
         cartOverlay = document.createElement('div');
         cartOverlay.className = 'cart-overlay';
@@ -226,7 +225,6 @@
         // Close mobile menu on resize to desktop
         if (window.innerWidth > 768) {
             navLinks.classList.remove('open');
-            hamburger.classList.remove('open');
         }
     }
 
@@ -245,16 +243,10 @@
             }
         });
 
-        // Hamburger menu
-        if (hamburger) {
-            hamburger.addEventListener('click', toggleMobileMenu);
-        }
-
         // Close mobile menu on link click
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('open');
-                hamburger.classList.remove('open');
             });
         });
 
@@ -312,14 +304,6 @@
         } else {
             navbar.classList.remove('scrolled');
         }
-    }
-
-    // ============================================
-    // Mobile Menu Toggle
-    // ============================================
-    function toggleMobileMenu() {
-        navLinks.classList.toggle('open');
-        hamburger.classList.toggle('open');
     }
 
     // ============================================
@@ -551,6 +535,11 @@
             floatBadge.textContent = cartCount;
             floatBadge.style.display = cartCount > 0 ? 'flex' : 'none';
         }
+        var desktopBadge = document.getElementById('cartCountDesktop');
+        if (desktopBadge) {
+            desktopBadge.textContent = cartCount;
+            desktopBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+        }
 
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = `
@@ -613,6 +602,8 @@
     function handleCheckout() {
         if (cart.length === 0) return;
 
+        closeCart();
+
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
         showCheckoutModal(total);
@@ -627,10 +618,10 @@
 
         var overlay = document.createElement('div');
         overlay.className = 'checkout-overlay';
-        overlay.onclick = closeCheckoutModal;
 
         var modal = document.createElement('div');
         modal.className = 'checkout-modal';
+        modal.onclick = function(e) { e.stopPropagation(); };
         modal.innerHTML =
             '<div class="checkout-modal-header">' +
                 '<h3>Complete Your Order</h3>' +

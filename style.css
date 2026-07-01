@@ -279,21 +279,6 @@ header.scrolled {
     border-radius: 8px;
 }
 
-.hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 4px;
-    z-index: 1001;
-}
-
-.hamburger span {
-    width: 22px;
-    height: 2px;
-    background: var(--gold);
-    transition: var(--transition-fast);
-}
-
 /* ============================================ */
 /* Hero Section */
 /* ============================================ */
@@ -1165,12 +1150,14 @@ footer {
     z-index: 1999;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .cart-overlay.open {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .cart-header {
@@ -1493,23 +1480,6 @@ footer {
     .nav-links.open {
         transform: translateY(0);
         opacity: 1;
-    }
-    
-    .hamburger {
-        display: flex;
-        z-index: 1001;
-    }
-    
-    .hamburger.open span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-    
-    .hamburger.open span:nth-child(2) {
-        opacity: 0;
-    }
-    
-    .hamburger.open span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -6px);
     }
     
     .logo {
