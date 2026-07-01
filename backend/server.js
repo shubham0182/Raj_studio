@@ -261,13 +261,10 @@ app.use((err, req, res, next) => {
 
 mongoose.connect(MONGO_URI)
     .then(async () => {
-        console.log('MongoDB Connected');
+        console.log("MongoDB Connected");
         await seedData();
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`Raj Studio Gift backend running on http://localhost:${PORT}`);
         });
     })
-    .catch(err => {
-        console.error('Failed to connect to MongoDB:', err.message);
-        process.exit(1);
-    });
+    .catch((err) => console.error("MongoDB Error:", err));
