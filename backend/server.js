@@ -51,8 +51,8 @@ function authenticateToken(req, res, next) {
     }
 }
 
-// Store uploaded images permanently on local disk (backend/uploads)
-const useCloudinary = false;
+// Store uploaded images permanently on Cloudinary (cloud storage)
+const useCloudinary = true;
 var storage, upload;
 if (useCloudinary) {
     storage = new CloudinaryStorage({

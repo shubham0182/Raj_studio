@@ -756,8 +756,10 @@
                         return;
                     }
                     container.innerHTML = images.map(function(img) {
+                        var imgUrl = img.image;
+                        if (imgUrl && imgUrl.indexOf('/uploads/') === 0) imgUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + imgUrl;
                         return '<div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);aspect-ratio:1;background:rgba(255,255,255,0.03);">' +
-                            '<img src="' + img.image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + escapeHtml(img.caption || 'Gallery image') + '">' +
+                            '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;" alt="' + escapeHtml(img.caption || 'Gallery image') + '">' +
                             (img.caption ? '<div style="position:absolute;bottom:0;left:0;right:0;padding:0.4rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:var(--white);font-size:0.7rem;text-align:center;">' + escapeHtml(img.caption) + '</div>' : '') +
                             '<button onclick="adminDeleteGallery(\'' + img._id + '\')" style="position:absolute;top:6px;right:6px;background:rgba(255,0,0,0.75);border:none;border-radius:50%;width:30px;height:30px;color:white;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;" onmouseover="this.style.opacity=1" onmouseleave="this.style.opacity=0" title="Delete"><i class="fas fa-trash"></i></button>' +
                             '</div>';
@@ -1074,7 +1076,9 @@
                             return;
                         }
                         grid.innerHTML = images.map(function(img) {
-                            return '<div class="gallery-item"><img src="' + img.image + '" alt="' + (img.caption ? img.caption.replace(/"/g,'&quot;') : 'Gallery image') + '"></div>';
+                            var imgUrl = img.image;
+                            if (imgUrl && imgUrl.indexOf('/uploads/') === 0) imgUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + imgUrl;
+                            return '<div class="gallery-item"><img src="' + imgUrl + '" alt="' + (img.caption ? img.caption.replace(/"/g,'&quot;') : 'Gallery image') + '"></div>';
                         }).join('');
                     }).catch(function() {
                         if (loading) loading.style.display = 'none';
