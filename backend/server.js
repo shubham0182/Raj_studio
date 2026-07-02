@@ -51,8 +51,7 @@ function authenticateToken(req, res, next) {
     }
 }
 
-// Force local permanent storage for uploaded images.
-// If you want Cloudinary later, remove this flag / change condition.
+// Store uploaded images permanently on local disk (backend/uploads)
 const useCloudinary = false;
 var storage, upload;
 if (useCloudinary) {
