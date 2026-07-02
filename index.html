@@ -680,14 +680,14 @@
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: fd
-            }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            }).then(function(r) { return r.ok ? r.json() : r.json().then(function(err) { throw new Error(err.error || 'Upload failed'); }); })
             .then(function(resp) {
                 return fetch(API_BASE + '/api/gallery', {
                     method: 'POST',
                     headers: Object.assign({'Content-Type': 'application/json'}, getAuthHeaders()),
                     body: JSON.stringify({ image: resp.url, caption: caption })
                 });
-            }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            }).then(function(r) { return r.ok ? r.json() : r.json().then(function(err) { throw new Error(err.error || 'Gallery save failed'); }); })
             .then(function() {
                 document.getElementById('adminGalleryInput').value = '';
                 document.getElementById('adminGalleryLabel').textContent = 'Choose image to upload';

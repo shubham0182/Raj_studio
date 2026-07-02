@@ -52,7 +52,7 @@ function authenticateToken(req, res, next) {
 }
 
 // Store uploaded images permanently on Cloudinary (cloud storage)
-const useCloudinary = true;
+const useCloudinary = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 var storage, upload;
 if (useCloudinary) {
     storage = new CloudinaryStorage({
