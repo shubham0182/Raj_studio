@@ -51,7 +51,9 @@ function authenticateToken(req, res, next) {
     }
 }
 
-const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+// Force local permanent storage for uploaded images.
+// If you want Cloudinary later, remove this flag / change condition.
+const useCloudinary = false;
 var storage, upload;
 if (useCloudinary) {
     storage = new CloudinaryStorage({
