@@ -256,11 +256,6 @@ app.delete('/api/products/:id', authenticateToken, async (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/api/submissions', authenticateToken, async (req, res) => {
-    const submissions = await Submission.find().sort({ _id: -1 });
-    res.json(submissions);
-});
-
 app.post('/api/submissions', async (req, res) => {
     const { name, email, phone, message } = req.body;
     if (!name || !email || !message) {
@@ -270,12 +265,6 @@ app.post('/api/submissions', async (req, res) => {
     const date = new Date().toLocaleString();
     const result = await Submission.create({ name, email, phone: phone || '', message, date });
     res.json({ success: true, id: result._id });
-});
-
-app.delete('/api/submissions/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    await Submission.findByIdAndDelete(id);
-    res.json({ success: true });
 });
 
 app.get('/api/orders', authenticateToken, async (req, res) => {
