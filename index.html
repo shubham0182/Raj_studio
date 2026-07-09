@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raj Studio Gift - Corporate & Customized Gift Solutions</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="shubh.jpeg">
+    <style>
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 30, 58, 0.97);
+            backdrop-filter: blur(15px);
+            z-index: 999;
+            padding: 6px 0 env(safe-area-inset-bottom, 6px);
+            justify-content: space-around;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.6rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            border-radius: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav-item i {
+            font-size: 1.15rem;
+            transition: all 0.25s ease;
+        }
+        .bottom-nav-item span {
+            font-size: 0.6rem;
+            line-height: 1;
+        }
+        .bottom-nav-item:hover,
+        .bottom-nav-item.active {
+            color: var(--gold);
+        }
+        .bottom-nav-item.active i {
+            text-shadow: 0 0 12px rgba(245, 197, 66, 0.5);
+        }
+        .hamburger i { font-size: 1.4rem; color: var(--gold); }
+        @media (min-width: 769px) { .hamburger { display: none !important; } }
+        @media (max-width: 768px) {
+            .bottom-nav { display: flex; border: none !important; outline: none !important; box-shadow: none !important; }
+            body { padding-bottom: 58px; }
+            .nav-link::after { display: none !important; }
+            .nav-link.active::after { display: none !important; }
+            header, header.scrolled, .navbar { border: none !important; outline: none !important; box-shadow: none !important; }
+        }
+        .page {
+            display: none;
+            animation: pageFadeIn 0.4s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page.active .section-header {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .nav-link.active {
+            color: var(--gold) !important;
+        }
+        @media (min-width: 769px) {
+            .nav-link.active::after {
+                width: 100% !important;
+            }
+        }
+        #adminPanel .btn-outline {
+            border-color: rgba(255,255,255,0.2);
+            color: var(--text-muted);
+            padding: 0.5rem 1.2rem;
+        }
+        #adminPanel .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .admin-tab.active {
+            background: rgba(245, 197, 66, 0.15) !important;
+            color: var(--gold) !important;
+        }
+        .admin-tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        #adminPanel select option {
+            background: #1a2a4a;
+            color: var(--white);
+        }
+        @media (max-width: 768px) {
+            #adminSubmissions > div > div {
+                flex-direction: column;
+            }
+            .admin-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+            .admin-tabs button {
+                font-size: 0.75rem !important;
+                padding: 6px 10px !important;
+            }
+        }
+        @media (max-width: 480px) {
+            #adminTab-products > div:first-child > div {
+                grid-template-columns: 1fr !important;
+            }
+            #adminTab-categories > div:first-child > div {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="shubh.jpeg" alt="Raj Studio Gift" class="logo-img">
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#products" class="nav-link"><i class="fas fa-box"></i> Products</a></li>
+                <li><a href="#customize" class="nav-link"><i class="fas fa-paint-brush"></i> Customize</a></li>
+                <li><a href="#gallery" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
+                <li><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Floating Cart Button (Top Right) -->
+    <button class="floating-cart-btn" id="floatingCartBtn" onclick="event.stopPropagation(); app.toggleCart();" title="Cart">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count-badge floating-cart-badge" id="cartCountFloat">0</span>
+    </button>
+
+    <!-- Page: Home -->
+    <div class="page active" id="page-home">
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1><i class="fas fa-gift"></i> Raj Studio Shop <i class="fas fa-shopping-bag"></i></h1>
+                <p class="hero-subtitle">Corporate &amp; Customized Gift Solutions</p>
+                <p>Premium quality gifts tailored for your corporate needs</p>
+                <div class="cta-buttons">
+                    <a href="#products" class="btn-primary">Shop Now</a>
+                    <a href="#customize" class="btn-secondary">Customize Gift</a>
+                </div>
+            </div>
+
+        </section>
+        <section id="features" class="features">
+            <div class="section-header">
+                <h2>Why Choose Us</h2>
+                <p>Experience the difference with our premium services</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Quality Printing</h3>
+                    <p>We use state-of-the-art printing technology for vibrant, long-lasting results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Creative Designs</h3>
+                    <p>Our expert designers create unique, eye-catching designs tailored to your brand.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Trusted Service</h3>
+                    <p>With years of experience, we deliver reliable service and on-time delivery.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Products -->
+    <div class="page" id="page-products">
+        <section id="products" class="products">
+            <div class="section-header">
+                <h2>Our Product Categories</h2>
+                <p>Explore our premium range of customizable gifts</p>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="tshirt">T-shirt Printing</button>
+                <button class="filter-btn" data-filter="mug">Mug Printing</button>
+                <button class="filter-btn" data-filter="frame">Photo Frames</button>
+                <button class="filter-btn" data-filter="pen">Pen Printing</button>
+            </div>
+            <div class="products-grid">
+                <!-- Product Cards will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Customize -->
+    <div class="page" id="page-customize">
+        <section id="customize" class="customize">
+            <div class="section-header">
+                <h2>Customize Your Gift</h2>
+                <p>Create personalized gifts that make a lasting impression</p>
+            </div>
+            <div class="customize-options">
+                <div class="option-card">
+                    <i class="fas fa-tshirt"></i>
+                    <h3>T-shirt Printing</h3>
+                    <p>Custom designs on premium quality t-shirts</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-mug-hot"></i>
+                    <h3>Mug Printing</h3>
+                    <p>Personalized mugs for everyday use</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-image"></i>
+                    <h3>Photo Frames</h3>
+                    <p>Elegant frames to showcase your memories</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+                <div class="option-card">
+                    <i class="fas fa-pen"></i>
+                    <h3>Pen Printing</h3>
+                    <p>Professional pens with your logo or message</p>
+                    <a href="#" class="btn-outline">Learn More</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Contact -->
+    <!-- Page: Gallery -->
+    <div class="page" id="page-gallery">
+        <section id="gallery" class="gallery">
+            <div class="section-header">
+                <h2>Our Gallery</h2>
+                <p>Browse through our collection of customized gifts</p>
+            </div>
+            <div class="gallery-grid" id="galleryGrid"></div>
+            <div id="galleryLoading" style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div>
+        </section>
+    </div>
+
+    <div class="page" id="page-contact">
+        <section id="contact" class="contact">
+            <div class="section-header">
+                <h2>Contact Us</h2>
+                <p>Get in touch with our team for inquiries and orders</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-user"></i>
+                        <span>Name: Rajendrasinh Vihol</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Phone: +91 76985 52901</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=23.531531968808366,72.71768269528252" target="_blank" style="color:var(--light-blue);text-decoration:none;">A 19/20 Ashapura Complex Pilvai Chokdi PILVAI</a>
+                    </div>
+                </div>
+                <div class="contact-map">
+                    <!-- Google Maps Embed (Optional) -->
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d72.71768269528252!3d23.531531968808366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0!2sAshapura+Complex!5e0!3m2!1sen!2sin!4v1"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="#admin" class="btn-outline" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.5rem;"><i class="fas fa-lock"></i> Admin Panel</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page: Admin -->
+    <div class="page" id="page-admin">
+        <section class="contact" style="min-height: 100vh;">
+            <div class="section-header">
+                <h2>Admin Panel</h2>
+                <p>Manage products, categories, orders & gallery</p>
+            </div>
+            <div id="adminLogin" style="max-width: 360px; margin: 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px);">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-lock" style="font-size: 2rem; color: var(--gold);"></i>
+                    <h3 style="color: var(--white); margin-top: 0.5rem; font-size: 1.1rem;">Admin Login</h3>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="adminPass" placeholder="Enter admin password" style="width: 100%; padding: 0.75rem 0.9rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--white); font-size: 0.85rem; outline: none;">
+                </div>
+                <button onclick="adminLogin()" class="btn-primary" style="width: 100%; justify-content: center;">Login</button>
+                <p id="adminError" style="color: #ff6b6b; font-size: 0.8rem; text-align: center; margin-top: 0.75rem; display: none;">Incorrect password</p>
+            </div>
+            <div id="adminPanel" style="display: none; max-width: 960px; margin: 0 auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="admin-tabs" style="display: flex; gap: 4px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.08);">
+                        <button class="admin-tab active" data-tab="products" onclick="switchAdminTab('products')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Products</button>
+                        <button class="admin-tab" data-tab="categories" onclick="switchAdminTab('categories')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Categories</button>
+                        <button class="admin-tab" data-tab="orders" onclick="switchAdminTab('orders')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Orders</button>
+                        <button class="admin-tab" data-tab="gallery" onclick="switchAdminTab('gallery')" style="padding: 8px 16px; border: none; background: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.25s;">Gallery</button>
+                    </div>
+                    <button onclick="adminLogout()" class="btn-outline" style="font-size: 0.8rem;">Logout</button>
+                </div>
+                <div id="statusIndicators" style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1rem; padding:0.6rem 1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; backdrop-filter:blur(10px);">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span id="serverDot" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block;"></span>
+                        <span style="color:var(--text-muted);font-size:0.8rem;">Server</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span id="dbDot" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block;"></span>
+                        <span style="color:var(--text-muted);font-size:0.8rem;">Database</span>
+                    </div>
+                </div>
+                <!-- Tab: Products -->
+                <div id="adminTab-products" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Product</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminProdName" placeholder="Product name" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <select id="adminProdCategory" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;"></select>
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <input type="number" id="adminProdPrice" placeholder="Price" step="0.01" min="0" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label style="display:flex; align-items:center; gap:8px; width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                                    <i class="fas fa-upload"></i>
+                                    <span id="adminProdIconLabel">Upload product image</span>
+                                    <input type="file" id="adminProdIcon" accept="image/*" style="display:none;" onchange="previewAdminImage(this)">
+                                </label>
+                                <div id="adminProdIconPreview" style="display:none; margin-top:6px; width:60px; height:60px; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);"><img src="" style="width:100%;height:100%;object-fit:cover;"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin:0.75rem 0 0;">
+                            <textarea id="adminProdDesc" placeholder="Description" rows="2" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none; resize:vertical;"></textarea>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                        <button id="adminAddBtn" onclick="adminAddProduct()" class="btn-primary" style="font-size:0.85rem; padding:0.6rem 1.5rem;">Add Product</button>
+                        <button id="adminCancelBtn" onclick="adminCancelEdit()" class="btn-outline" style="font-size:0.85rem; padding:0.6rem 1.5rem; display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:var(--text-muted); border-radius:8px; cursor:pointer;">Cancel</button>
+                    </div>
+                    </div>
+                    <div id="adminProductList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                </div>
+                <!-- Tab: Orders -->
+                <div id="adminTab-orders" class="admin-tab-content" style="display: none;">
+                    <div id="adminOrders" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+                </div>
+                <!-- Tab: Gallery -->
+                <div id="adminTab-gallery" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Gallery Image</h3>
+                        <label style="display:flex; align-items:center; gap:10px; width:100%; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                            <i class="fas fa-upload"></i>
+                            <span id="adminGalleryLabel">Choose image to upload</span>
+                            <input type="file" id="adminGalleryInput" accept="image/*" style="display:none;" onchange="previewAdminGalleryImage(this)">
+                        </label>
+                        <div id="adminGalleryPreview" style="display:none; margin-top:10px; width:100px; height:100px; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);"><img src="" style="width:100%;height:100%;object-fit:cover;"></div>
+                        <div class="form-group" style="margin:0.75rem 0 0;">
+                            <input type="text" id="adminGalleryCaption" placeholder="Caption (optional)" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                        </div>
+                        <button onclick="adminUploadGallery()" class="btn-primary" style="margin-top:0.75rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Upload</button>
+                    </div>
+                    <div id="adminGalleryList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;"></div>
+                </div>
+                <!-- Tab: Categories -->
+                <div id="adminTab-categories" class="admin-tab-content" style="display: none;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
+                        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 1rem;">Add Category</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminCatName" placeholder="Category name" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <input type="text" id="adminCatIcon" placeholder="Icon class (e.g. fas fa-tag)" style="width:100%; padding:0.7rem 0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:var(--white); font-size:0.85rem; outline:none;">
+                            </div>
+                        </div>
+                        <button onclick="adminAddCategory()" class="btn-primary" style="margin-top:0.75rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Add Category</button>
+                    </div>
+                    <div id="adminCategoryList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="shubh.jpeg" alt="Raj Studio Gift" class="footer-logo-img">
+            </div>
+            <p>Premium Corporate Gift Solutions</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/917698552901" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2K26 Raj Studio &amp; Gift</p>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar (Hidden by default) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be populated by JavaScript -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₹0.00</span>
+            </div>
+            <button class="btn-primary" id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="#home" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#products" class="bottom-nav-item">
+            <i class="fas fa-box"></i>
+            <span>Products</span>
+        </a>
+        <a href="#customize" class="bottom-nav-item">
+            <i class="fas fa-paint-brush"></i>
+            <span>Customize</span>
+        </a>
+        <a href="#gallery" class="bottom-nav-item">
+            <i class="fas fa-images"></i>
+            <span>Gallery</span>
+        </a>
+        <a href="#contact" class="bottom-nav-item">
+            <i class="fas fa-envelope"></i>
+            <span>Contact</span>
+        </a>
+    </nav>
+
+    <script>
+        var API_BASE = localStorage.getItem('rajStudio_apiUrl');
+        if (!API_BASE) {
+            if (location.protocol === 'file:') {
+                API_BASE = 'http://localhost:10000';
+            } else if (location.hostname.includes('vercel')) {
+                API_BASE = 'https://raj-studio.onrender.com';
+            } else {
+                API_BASE = '';
+            }
+        }
+        var _adminToken = sessionStorage.getItem('rajStudio_adminToken');
+
+        function getAuthHeaders(contentType) {
+            var h = contentType ? { 'Content-Type': contentType } : {};
+            if (_adminToken) h['Authorization'] = 'Bearer ' + _adminToken;
+            return h;
+        }
+
+        function adminLogin() {
+            var pass = document.getElementById('adminPass');
+            var err = document.getElementById('adminError');
+            fetch(API_BASE + '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: 'admin', password: pass.value })
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Invalid');
+                return r.json();
+            }).then(function(data) {
+                _adminToken = data.token;
+                sessionStorage.setItem('rajStudio_adminToken', _adminToken);
+                err.style.display = 'none';
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                switchAdminTab('products');
+                populateCategorySelect();
+                renderAdminProducts();
+                renderAdminCategories();
+                renderAdminOrders();
+                startStatusPolling();
+            }).catch(function() {
+                err.style.display = 'block';
+                pass.value = '';
+                pass.focus();
+            });
+        }
+
+        function checkStatus() {
+            fetch(API_BASE + '/api/status')
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function(data) {
+                    var sDot = document.getElementById('serverDot');
+                    var dDot = document.getElementById('dbDot');
+                    if (sDot) { sDot.style.background = data.server ? '#4caf50' : '#f44336'; sDot.style.boxShadow = data.server ? '0 0 6px #4caf50' : 'none'; }
+                    if (dDot) { dDot.style.background = data.mongodb ? '#4caf50' : '#f44336'; dDot.style.boxShadow = data.mongodb ? '0 0 6px #4caf50' : 'none'; }
+                })
+                .catch(function() {
+                    var sDot = document.getElementById('serverDot');
+                    var dDot = document.getElementById('dbDot');
+                    if (sDot) { sDot.style.background = '#f44336'; sDot.style.boxShadow = 'none'; }
+                    if (dDot) { dDot.style.background = '#f44336'; dDot.style.boxShadow = 'none'; }
+                });
+        }
+
+        function startStatusPolling() {
+            checkStatus();
+            if (window._statusInterval) clearInterval(window._statusInterval);
+            window._statusInterval = setInterval(checkStatus, 15000);
+        }
+
+        function adminLogout() {
+            _adminToken = null;
+            sessionStorage.removeItem('rajStudio_adminToken');
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminError').style.display = 'none';
+            if (window._statusInterval) { clearInterval(window._statusInterval); window._statusInterval = null; }
+        }
+
+        function deleteOrder(id) {
+            if (!confirm('Delete this order?')) return;
+            fetch(API_BASE + '/api/orders/' + id, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Failed');
+                renderAdminOrders();
+            }).catch(function(e) { alert('Error: ' + e.message); });
+        }
+        function deleteLocalOrder(index) {
+            if (!confirm('Delete this order?')) return;
+            try {
+                var orders = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]');
+                orders.splice(index, 1);
+                localStorage.setItem('rajStudio_orders', JSON.stringify(orders));
+                renderAdminOrders();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        function renderAdminOrders() {
+            var container = document.getElementById('adminOrders');
+            if (!_adminToken) { container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Login required</p></div>'; return; }
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Loading...</p></div>';
+
+            // Load local orders first
+            var localOrders = [];
+            try { localOrders = JSON.parse(localStorage.getItem('rajStudio_orders') || '[]'); } catch (e) {}
+
+            fetch(API_BASE + '/api/orders', { headers: getAuthHeaders() })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function(apiOrders) {
+                    var merged = (localOrders.length ? localOrders : []).concat(apiOrders);
+                    if (!merged.length) {
+                        showOrdersEmpty(container);
+                    } else {
+                        renderOrdersList(container, merged);
+                    }
+                }).catch(function() {
+                    if (localOrders.length) {
+                        renderOrdersList(container, localOrders);
+                    } else {
+                        showOrdersEmpty(container);
+                    }
+                });
+
+        function showOrdersEmpty(container) {
+            container.innerHTML = '<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);"><i class="fas fa-shopping-bag" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i><p>No orders yet</p></div>';
+        }
+
+        function renderOrdersList(container, orders) {
+            container.innerHTML = orders.map(function(o, idx) {
+                var itemsHtml = '';
+                if (o.items && o.items.length) {
+                    itemsHtml = o.items.map(function(item) {
+                        var qty = item.quantity || 1;
+                        var price = item.price || 0;
+                        return '<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:2px 0;"><span>' + escapeHtml(item.name) + ' x' + qty + '</span><span style="color:var(--gold);">₹' + (price * qty).toFixed(2) + '</span></div>';
+                    }).join('');
+                }
+                var isLocal = !o._id;
+                var imageHtml = '';
+                if (o.image && o.image.length > 100) {
+                    var downloadId = 'dl_img_' + (o._id || Date.now());
+                    imageHtml = '<div style="margin:0.5rem 0;display:flex;align-items:center;gap:0.5rem;"><img src="' + o.image + '" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid rgba(245,197,66,0.3);" title="Uploaded Image"><button onclick="var a=document.createElement(\'a\');a.href=\'' + o.image + '\';a.download=\'uploaded_image_' + (o._id || Date.now()) + '.png\';document.body.appendChild(a);a.click();document.body.removeChild(a);" style="background:var(--gold);color:var(--dark-blue);border:none;border-radius:6px;padding:6px 10px;font-size:0.75rem;cursor:pointer;font-weight:600;"><i class="fas fa-download"></i> Download</button></div>';
+                }
+                return '<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; backdrop-filter: blur(10px);">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">' +
+                    '<div style="flex: 1;">' +
+                    '<div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">' +
+                    '<span style="color: var(--gold); font-weight: 600; font-size: 0.9rem;"><i class="fas fa-user"></i> ' + escapeHtml(o.name) + '</span>' +
+                    '<span style="color: var(--light-blue); font-size: 0.85rem;"><i class="fas fa-envelope"></i> ' + escapeHtml(o.email) + '</span>' +
+                    (o.phone ? '<span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fas fa-phone"></i> ' + escapeHtml(o.phone) + '</span>' : '') +
+                    '</div>' +
+                    (itemsHtml ? '<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.5rem 0.75rem;margin:0.5rem 0;">' + itemsHtml + '</div>' : '<div style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem 0;font-style:italic;">No product details</div>') +
+                    (imageHtml) +
+                    '<div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:600;padding:0.25rem 0;"><span style="color:var(--text-muted);">Total</span><span style="color:var(--gold);">₹' + (o.total || 0).toFixed(2) + '</span></div>' +
+                    '<div style="color: var(--text-muted); font-size: 0.7rem; margin-top: 0.5rem;">' + (o.date || '') + '</div>' +
+                    (isLocal ? '<div style="color:#ff9800;font-size:0.7rem;margin-top:0.25rem;"><i class="fas fa-exclamation-triangle"></i> Saved locally</div>' : '') +
+                    '</div>' +
+                    '<button onclick="' + (isLocal ? 'deleteLocalOrder(' + idx + ')' : 'deleteOrder(\'' + o._id + '\')') + '" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 4px; flex-shrink: 0;" title="Delete"><i class="fas fa-trash"></i></button>' +
+                    '</div></div>';
+            }).join('');
+        }
+        }
+
+        function previewAdminGalleryImage(input) {
+            var label = document.getElementById('adminGalleryLabel');
+            var preview = document.getElementById('adminGalleryPreview');
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.style.display = 'block';
+                    preview.querySelector('img').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function adminUploadGallery() {
+            var input = document.getElementById('adminGalleryInput');
+            if (!input.files || !input.files[0]) { alert('Please select an image'); return; }
+            var captionInput = document.getElementById('adminGalleryCaption');
+            var caption = captionInput.value.trim() || '';
+            var fd = new FormData();
+            fd.append('image', input.files[0]);
+            fetch(API_BASE + '/api/upload', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: fd
+            }).then(function(r) { return r.ok ? r.json() : r.json().then(function(err) { throw new Error(err.error || 'Upload failed'); }); })
+            .then(function(resp) {
+                return fetch(API_BASE + '/api/gallery', {
+                    method: 'POST',
+                    headers: Object.assign({'Content-Type': 'application/json'}, getAuthHeaders()),
+                    body: JSON.stringify({ image: resp.url, caption: caption })
+                });
+            }).then(function(r) { return r.ok ? r.json() : r.json().then(function(err) { throw new Error(err.error || 'Gallery save failed'); }); })
+            .then(function() {
+                document.getElementById('adminGalleryInput').value = '';
+                document.getElementById('adminGalleryLabel').textContent = 'Choose image to upload';
+                document.getElementById('adminGalleryPreview').style.display = 'none';
+                document.getElementById('adminGalleryCaption').value = '';
+                renderAdminGallery();
+            }).catch(function(e) { alert('Upload failed: ' + (e.message || 'Unknown error')); });
+        }
+
+        function renderAdminGallery() {
+            var container = document.getElementById('adminGalleryList');
+            if (!_adminToken) { container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Login required</p></div>'; return; }
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Loading...</p></div>';
+            fetch(API_BASE + '/api/gallery', { headers: getAuthHeaders() })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function(images) {
+                    if (!images.length) {
+                        container.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><i class="fas fa-images" style="font-size:2.5rem;margin-bottom:1rem;opacity:0.5;"></i><p>No gallery images yet</p></div>';
+                        return;
+                    }
+                    container.innerHTML = images.map(function(img) {
+                        var imgUrl = img.image;
+                        if (imgUrl && imgUrl.indexOf('/uploads/') === 0) imgUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + imgUrl;
+                        return '<div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);aspect-ratio:1;background:rgba(255,255,255,0.03);">' +
+                            '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;" alt="' + escapeHtml(img.caption || 'Gallery image') + '">' +
+                            (img.caption ? '<div style="position:absolute;bottom:0;left:0;right:0;padding:0.4rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:var(--white);font-size:0.7rem;text-align:center;">' + escapeHtml(img.caption) + '</div>' : '') +
+                            '<button onclick="adminDeleteGallery(\'' + img._id + '\')" style="position:absolute;top:6px;right:6px;background:rgba(255,0,0,0.85);border:none;border-radius:50%;width:30px;height:30px;color:white;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.25s;" title="Delete"><i class="fas fa-trash"></i></button>' +
+                            '</div>';
+                    }).join('');
+                }).catch(function() {
+                    container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Failed to load gallery</p></div>';
+                });
+        }
+
+        function adminDeleteGallery(id) {
+            if (!confirm('Delete this image?')) return;
+            fetch(API_BASE + '/api/gallery/' + id, { method: 'DELETE', headers: getAuthHeaders() })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function() { renderAdminGallery(); })
+                .catch(function(e) { alert('Error: ' + e.message); });
+        }
+
+        function escapeHtml(text) {
+            var d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); t.style.background = 'none'; t.style.color = ''; });
+            document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+            var activeTab = document.querySelector('.admin-tab[data-tab="' + tab + '"]');
+            if (activeTab) { activeTab.classList.add('active'); activeTab.style.background = 'rgba(245,197,66,0.15)'; activeTab.style.color = 'var(--gold)'; }
+            var content = document.getElementById('adminTab-' + tab);
+            if (content) content.style.display = 'block';
+            if (tab === 'products') { populateCategorySelect(); renderAdminProducts(); }
+            if (tab === 'categories') renderAdminCategories();
+            if (tab === 'orders') renderAdminOrders();
+            if (tab === 'gallery') renderAdminGallery();
+        }
+
+        function populateCategorySelect() {
+            var sel = document.getElementById('adminProdCategory');
+            if (!sel) return;
+            sel.innerHTML = '';
+            fetch(API_BASE + '/api/categories').then(function(r) { return r.json(); }).then(function(cats) {
+                cats.forEach(function(c) {
+                    var opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    sel.appendChild(opt);
+                });
+            }).catch(function() {});
+        }
+
+        function renderAdminCategories() {
+            var container = document.getElementById('adminCategoryList');
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Loading...</p></div>';
+            fetch(API_BASE + '/api/categories').then(function(r) { return r.json(); }).then(function(cats) {
+                if (!cats.length) {
+                    container.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);"><p>No categories yet</p></div>';
+                    return;
+                }
+                container.innerHTML = cats.map(function(c) {
+                    return '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.8rem 1rem;backdrop-filter:blur(10px);">' +
+                        '<div style="display:flex;align-items:center;gap:10px;"><i class="' + c.icon + '" style="color:var(--gold);font-size:1.1rem;"></i><span style="color:var(--white);font-size:0.9rem;">' + escapeHtml(c.name) + '</span></div>' +
+                        '<button onclick="deleteAdminCategory(\'' + c.id + '\')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div>';
+                }).join('');
+            }).catch(function() {
+                container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Failed to load categories</p></div>';
+            });
+        }
+
+        function deleteAdminCategory(catId) {
+            if (!confirm('Delete this category and all its products?')) return;
+            fetch(API_BASE + '/api/categories/' + catId, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Failed');
+                renderAdminCategories();
+                renderAdminProducts();
+                if (window.app && window.app.refreshData) window.app.refreshData();
+            }).catch(function(e) { alert('Error: ' + e.message); });
+        }
+
+        function adminAddCategory() {
+            var nameInput = document.getElementById('adminCatName');
+            var iconInput = document.getElementById('adminCatIcon');
+            var name = nameInput.value.trim();
+            var icon = iconInput.value.trim() || 'fas fa-tag';
+            if (!name) { alert('Enter a category name'); nameInput.focus(); return; }
+            var id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            fetch(API_BASE + '/api/categories', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ id: id, name: name, icon: icon })
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Failed to add category');
+                nameInput.value = '';
+                iconInput.value = '';
+                renderAdminCategories();
+                populateCategorySelect();
+                if (window.app && window.app.refreshData) window.app.refreshData();
+            }).catch(function(e) { alert('Error: ' + e.message); });
+        }
+
+        var _editingProdId = null;
+
+        function renderAdminProducts() {
+            var container = document.getElementById('adminProductList');
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Loading...</p></div>';
+            Promise.all([
+                fetch(API_BASE + '/api/products').then(function(r) { return r.json(); }),
+                fetch(API_BASE + '/api/categories').then(function(r) { return r.json(); })
+            ]).then(function(results) {
+                var prods = results[0];
+                var cats = results[1];
+                var catMap = {};
+                cats.forEach(function(c) { catMap[c.id] = c.name; });
+                if (!prods.length) {
+                    container.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);"><p>No products yet</p></div>';
+                    return;
+                }
+                container.innerHTML = prods.map(function(p) {
+                    var iconSrc2 = p.icon;
+                    if (iconSrc2 && iconSrc2.indexOf('/uploads/') === 0) iconSrc2 = API_BASE + iconSrc2;
+                    var isUrl = iconSrc2 && (iconSrc2.indexOf('/uploads/') === 0 || iconSrc2.indexOf('http') === 0);
+                    var thumb = isUrl
+                        ? '<img src="' + iconSrc2 + '" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">'
+                        : '<i class="' + (p.icon || 'fas fa-box') + '" style="color:var(--gold);font-size:1.1rem;"></i>';
+                    return '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.8rem 1rem;backdrop-filter:blur(10px);">' +
+                        '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">' + thumb +
+                        '<div style="min-width:0;"><div style="color:var(--white);font-size:0.9rem;font-weight:600;">' + escapeHtml(p.name) + '</div>' +
+                        '<div style="color:var(--text-muted);font-size:0.75rem;">' + (catMap[p.category] || p.category) + ' — ₹' + parseFloat(p.price).toFixed(2) + '</div></div></div>' +
+                        '<div style="display:flex;gap:4px;flex-shrink:0;">' +
+                        '<button onclick="adminEditProduct(\'' + p._id + '\')" style="background:none;border:none;color:var(--light-blue);cursor:pointer;font-size:0.85rem;padding:4px;" title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button onclick="deleteAdminProduct(\'' + p._id + '\')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:0.9rem;padding:4px;" title="Delete"><i class="fas fa-trash"></i></button></div></div>';
+                }).join('');
+            }).catch(function() {
+                container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><p>Failed to load products</p></div>';
+            });
+        }
+
+        function adminEditProduct(id) {
+            fetch(API_BASE + '/api/products').then(function(r) { return r.json(); }).then(function(prods) {
+                var p = prods.find(function(x) { return x._id === id; });
+                if (!p) return;
+                _editingProdId = id;
+                document.getElementById('adminProdName').value = p.name;
+                document.getElementById('adminProdCategory').value = p.category;
+                document.getElementById('adminProdPrice').value = p.price;
+                document.getElementById('adminProdDesc').value = p.description || '';
+                var iconSrc3 = p.icon;
+                if (iconSrc3 && iconSrc3.indexOf('/uploads/') === 0) iconSrc3 = API_BASE + iconSrc3;
+                var isUrl = iconSrc3 && (iconSrc3.indexOf('/uploads/') === 0 || iconSrc3.indexOf('data:image') === 0 || iconSrc3.indexOf('http') === 0);
+                if (isUrl) {
+                    document.getElementById('adminProdIconPreview').querySelector('img').src = iconSrc3;
+                    document.getElementById('adminProdIconPreview').style.display = 'block';
+                    document.getElementById('adminProdIconLabel').textContent = 'Change image';
+                } else {
+                    document.getElementById('adminProdIconPreview').style.display = 'none';
+                    document.getElementById('adminProdIconLabel').textContent = 'Upload product image';
+                }
+                document.getElementById('adminProdIcon').value = '';
+                document.getElementById('adminAddBtn').textContent = 'Update Product';
+                document.getElementById('adminCancelBtn').style.display = 'inline-flex';
+                window.scrollTo({ top: document.getElementById('adminTab-products').offsetTop - 100, behavior: 'smooth' });
+            });
+        }
+
+        function adminCancelEdit() {
+            _editingProdId = null;
+            document.getElementById('adminProdName').value = '';
+            document.getElementById('adminProdPrice').value = '';
+            document.getElementById('adminProdIcon').value = '';
+            document.getElementById('adminProdIconPreview').style.display = 'none';
+            document.getElementById('adminProdIconLabel').textContent = 'Upload product image';
+            document.getElementById('adminProdDesc').value = '';
+            document.getElementById('adminAddBtn').textContent = 'Add Product';
+            document.getElementById('adminCancelBtn').style.display = 'none';
+        }
+
+        function deleteAdminProduct(prodId) {
+            if (!confirm('Delete this product?')) return;
+            fetch(API_BASE + '/api/products/' + prodId, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Failed');
+                renderAdminProducts();
+                if (window.app && window.app.refreshData) window.app.refreshData();
+            }).catch(function(e) { alert('Error: ' + e.message); });
+        }
+
+        function previewAdminImage(input) {
+            var preview = document.getElementById('adminProdIconPreview');
+            var label = document.getElementById('adminProdIconLabel');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.querySelector('img').src = e.target.result;
+                    preview.style.display = 'block';
+                    label.textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function adminAddProduct() {
+            var name = document.getElementById('adminProdName').value.trim();
+            var category = document.getElementById('adminProdCategory').value;
+            var price = parseFloat(document.getElementById('adminProdPrice').value);
+            var desc = document.getElementById('adminProdDesc').value.trim();
+            var fileInput = document.getElementById('adminProdIcon');
+            if (!name || !price) { alert('Enter product name and price'); return; }
+            if (isNaN(price) || price <= 0) { alert('Enter a valid price'); return; }
+
+            var formData = new FormData();
+            formData.append('name', name);
+            formData.append('category', category);
+            formData.append('price', price);
+            formData.append('description', desc);
+            if (fileInput.files.length) {
+                formData.append('image', fileInput.files[0]);
+            } else if (_editingProdId === null) {
+                formData.append('icon', 'fas fa-box');
+            }
+
+            var url = API_BASE + '/api/products';
+            var method = 'POST';
+            if (_editingProdId !== null) {
+                url += '/' + _editingProdId;
+                method = 'PUT';
+            }
+
+            var headers = {};
+            if (_adminToken) headers['Authorization'] = 'Bearer ' + _adminToken;
+
+            fetch(url, { method: method, headers: headers, body: formData })
+                .then(function(r) {
+                    if (!r.ok) return r.json().then(function(err) { throw new Error(err.error || 'Failed to save product'); });
+                    adminCancelEdit();
+                    renderAdminProducts();
+                    if (window.app && window.app.refreshData) window.app.refreshData();
+                }).catch(function(e) { alert('Error: ' + e.message); });
+        }
+
+        // Auto-login if token exists in session
+        if (_adminToken) {
+            fetch(API_BASE + '/api/auth/verify', { headers: getAuthHeaders() })
+                .then(function(r) {
+                    if (r.ok) {
+                        document.getElementById('adminLogin').style.display = 'none';
+                        document.getElementById('adminPanel').style.display = 'block';
+                        switchAdminTab('products');
+                        renderAdminOrders();
+                        startStatusPolling();
+                    } else {
+                        sessionStorage.removeItem('rajStudio_adminToken');
+                        _adminToken = null;
+                    }
+                }).catch(function() {});
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var pageNames = ['home', 'products', 'customize', 'gallery', 'contact', 'admin'];
+
+            function initPageScrollReveal(pageEl) {
+                pageEl.querySelectorAll('.section-header, .product-card, .feature-card, .option-card, .info-item, .contact-map, .contact-form').forEach(function(el) {
+                    el.classList.add('visible');
+                });
+            }
+
+            function navigateTo(page) {
+                if (!page || page === 'home' && !location.hash) page = 'home';
+                document.querySelectorAll('.page').forEach(function(p) {
+                    p.classList.remove('active');
+                });
+                var target = document.getElementById('page-' + page);
+                if (target) {
+                    target.classList.add('active');
+                    target.scrollTop = 0;
+                    setTimeout(function() { initPageScrollReveal(target); }, 50);
+                }
+                if (page === 'gallery') loadGallery();
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                document.querySelectorAll('.bottom-nav-item, .nav-link').forEach(function(link) {
+                    var href = link.getAttribute('href');
+                    if (href) {
+                        var id = href.replace('#', '');
+                        link.classList.toggle('active', id === page);
+                    }
+                });
+                // Reset admin login when navigating away
+                if (page !== 'admin') {
+                    var login = document.getElementById('adminLogin');
+                    var panel = document.getElementById('adminPanel');
+                    if (login && panel) {
+                        login.style.display = 'block';
+                        panel.style.display = 'none';
+                        var err = document.getElementById('adminError');
+                        if (err) err.style.display = 'none';
+                    }
+                }
+            }
+
+            function loadGallery() {
+                var grid = document.getElementById('galleryGrid');
+                var loading = document.getElementById('galleryLoading');
+                if (!grid) return;
+                if (loading) loading.style.display = 'block';
+                fetch(API_BASE + '/api/gallery')
+                    .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+                    .then(function(images) {
+                        if (loading) loading.style.display = 'none';
+                        if (!images.length) {
+                            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);"><i class="fas fa-images" style="font-size:3rem;margin-bottom:1rem;opacity:0.5;display:block;"></i>No images yet</div>';
+                            return;
+                        }
+                        grid.innerHTML = images.map(function(img) {
+                            var imgUrl = img.image;
+                            if (imgUrl && imgUrl.indexOf('/uploads/') === 0) imgUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + imgUrl;
+                            return '<div class="gallery-item"><img src="' + imgUrl + '" alt="' + (img.caption ? img.caption.replace(/"/g,'&quot;') : 'Gallery image') + '"></div>';
+                        }).join('');
+                    }).catch(function() {
+                        if (loading) loading.style.display = 'none';
+                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">Failed to load gallery</div>';
+                    });
+            }
+
+            function getPageFromHash() {
+                var hash = location.hash.replace('#', '');
+                return pageNames.indexOf(hash) !== -1 ? hash : 'home';
+            }
+
+            document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    var href = this.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        var id = href.replace('#', '');
+                        if (pageNames.indexOf(id) !== -1) {
+                            e.preventDefault();
+                            history.pushState(null, '', '#' + id);
+                            navigateTo(id);
+                            // Close mobile menu
+                            document.querySelector('.nav-links') && document.querySelector('.nav-links').classList.remove('open');
+                            var h = document.querySelector('.hamburger');
+                            if (h) { h.classList.remove('open'); var hi = h.querySelector('i'); if (hi) hi.className = 'fas fa-bars'; }
+                        }
+                    }
+                });
+            });
+
+            window.addEventListener('hashchange', function() {
+                navigateTo(getPageFromHash());
+            });
+
+            // Hamburger icon toggle
+            document.querySelector('.hamburger') && document.querySelector('.hamburger').addEventListener('click', function() {
+                var icon = this.querySelector('i');
+                if (icon) icon.className = this.classList.contains('open') ? 'fas fa-bars' : 'fas fa-times';
+            });
+
+            // Override CTA button clicks to use page nav
+            document.querySelectorAll('.cta-buttons a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var id = this.getAttribute('href').replace('#', '');
+                    history.pushState(null, '', '#' + id);
+                    navigateTo(id);
+                });
+            });
+
+            navigateTo(getPageFromHash());
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
